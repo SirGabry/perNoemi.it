@@ -32,7 +32,7 @@
       overflow-x: hidden;
       min-height: 200vh;
       line-height: 1.6;
-      /* FIX TIPOGRAFICO: Niente sillabazione */
+      /* FIX TIPOGRAFICO 1: Disabilita sillabazione */
       -webkit-hyphens: none;
       -moz-hyphens: none;
       -ms-hyphens: none;
@@ -91,15 +91,15 @@
       50% { transform: scale(1.15); }
     }
 
-    /* MODIFICA: Opacità forzata a 0 per garantire che sia nascosto all'inizio */
+    /* NASCONDE INIZIALMENTE LE SEZIONI */
     .section {
-      margin: 35vh 0; /* Aumentato leggermente lo spazio per favorire lo scroll */
+      margin: 35vh 0; 
       opacity: 0; 
+      visibility: hidden; /* Importante per evitare flash */
       transform: translateY(30px); 
-      visibility: hidden; /* Sicurezza extra per evitare flash */
     }
 
-    /* FIX TIPOGRAFICO: Word-break corretto */
+    /* FIX TIPOGRAFICO 2: CSS di sicurezza */
     p {
       font-size: 1.3rem;
       max-width: 650px;
@@ -213,25 +213,25 @@
       const sections = gsap.utils.toArray('.section:not(#intro)');
       
       sections.forEach(section => {
-        // Impostiamo lo stato iniziale via JS per sicurezza
+        // Imposta stato iniziale
         gsap.set(section, { autoAlpha: 0, y: 30 });
 
         gsap.to(section, {
-          autoAlpha: 1, // Gestisce sia opacity che visibility
+          autoAlpha: 1, // Gestisce opacity + visibility
           y: 0,
           duration: 1,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
-            // MODIFICA: "top 70%" significa che l'elemento deve salire fino al 70% dello schermo
-            // prima di apparire. Devi scrollare di più rispetto a prima.
-            start: "top 70%", 
+            // FIX SCROLL: start "top 75%" significa che il testo appare 
+            // solo quando è salito bene nello schermo.
+            start: "top 75%", 
             once: true 
           }
         });
       });
 
-      // 3. Typewriter Effect Logic
+      // 3. Typewriter Effect Logic (CORRETTA)
       const typewriterSections = document.querySelectorAll('.typewriter');
 
       typewriterSections.forEach((el) => {
@@ -241,8 +241,13 @@
         const chars = text.split('').map(char => {
           const span = document.createElement('span');
           span.textContent = char;
-          span.style.display = 'inline'; // Mantiene il fix tipografico
-          span.style.opacity = 0;      // Nasconde le lettere inizialmente
+          
+          // *** FIX CRUCIALE PER MOBILE ***
+          // Usiamo 'inline' invece di 'inline-block'.
+          // Questo impedisce alle parole di spezzarsi a metà.
+          span.style.display = 'inline'; 
+          
+          span.style.opacity = 0;
           el.appendChild(span);
           return span;
         });
@@ -254,8 +259,7 @@
           ease: "none",
           scrollTrigger: {
             trigger: el,
-            // MODIFICA: Anche qui 70%. Il testo parte solo quando è ben visibile.
-            start: "top 70%", 
+            start: "top 75%", // Parte dopo aver scrollato un po'
             once: true
           }
         });
