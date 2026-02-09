@@ -8,9 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
@@ -30,13 +30,21 @@
       background: #000;
       color: var(--crema);
       overflow-x: hidden;
-      min-height: 200vh;
+      min-height: 400vh;
       line-height: 1.6;
+      
+      /* --- FIX TIPOGRAFICO IMPORTANTE --- */
+      /* Disabilita la sillabazione automatica: le parole non si spezzano più */
       -webkit-hyphens: none;
       -moz-hyphens: none;
+      -ms-hyphens: none;
       hyphens: none;
+      /* Gestione a capo standard */
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
+    /* Sfondo dinamico */
     #orb {
       position: fixed;
       top: 50%;
@@ -49,14 +57,14 @@
       z-index: -1;
       filter: blur(40px);
       pointer-events: none;
-      will-change: transform;
+      will-change: transform; /* Ottimizzazione CPU */
     }
 
     .container {
       position: relative;
       z-index: 1;
       padding: 4vh 5vw;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       text-align: center;
     }
@@ -65,18 +73,15 @@
       font-family: 'Great Vibes', cursive;
       font-weight: normal;
       color: var(--crema);
-      margin-bottom: 1.5rem;
-      line-height: 1.2;
+      margin-bottom: 1rem;
+      /* Evita spezzettamenti anche nei titoli */
+      -webkit-hyphens: none;
+      hyphens: none;
     }
 
     h1 {
-      font-size: clamp(3.5rem, 12vw, 6rem);
+      font-size: clamp(3rem, 10vw, 6rem);
       text-shadow: 0 0 20px rgba(178, 235, 242, 0.6);
-      padding-top: 20px;
-    }
-
-    h2 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
     }
 
     .heart-intro {
@@ -89,46 +94,48 @@
       50% { transform: scale(1.15); }
     }
 
-    /* SICUREZZA: Text visibile di default. JS lo animerà se funziona. */
     .section {
-      margin: 30vh 0; 
-      opacity: 1; 
-      transform: none;
+      margin: 45vh 0;
+      opacity: 0; /* Gestito da GSAP */
+      transform: translateY(30px);
+      will-change: opacity, transform; /* Aiuta il browser a non laggare */
     }
 
-    /* FIX TIPOGRAFICO: Impedisce parole spezzate */
     p {
       font-size: 1.3rem;
-      max-width: 650px;
+      max-width: 700px;
       margin: 0 auto 2rem;
-      word-wrap: normal;
-      word-break: keep-all; 
-      overflow-wrap: normal;
+      /* Sicurezza extra per i paragrafi */
+      -webkit-hyphens: none;
+      hyphens: none;
     }
 
-    /* FIX MOBILE TYPEWRITER */
+    /* Classe di utilità per il JS */
     .typewriter span {
-        display: inline; /* Fondamentale per non spezzare le parole */
+      will-change: opacity;
     }
 
     footer {
-      padding: 10vh 5vw 15vh;
+      padding: 10vh 5vw;
       text-align: center;
     }
 
     .btn-final {
-      font-size: 1.3rem;
-      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      padding: 1rem 2.5rem;
       background: var(--bordeaux);
       color: var(--crema);
       border: none;
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(128,0,32,0.5);
-      transition: transform 0.2s;
+      transition: transform 0.3s;
       margin-top: 2rem;
       -webkit-tap-highlight-color: transparent;
-      font-weight: 600;
+    }
+
+    .btn-final:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -137,9 +144,9 @@
   <div id="orb"></div>
 
   <div class="container">
-    <section class="section" id="intro" style="margin-top: 10vh;">
+    <section class="section" id="intro">
       <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
-      <p style="font-size: 1.5rem;">Scorri lentamente...<br>queste parole sono tutte per te.</p>
+      <p style="font-size: 1.5rem;">Scorri lentamente... queste parole sono tutte per te.</p>
     </section>
 
     <section class="section">
@@ -182,105 +189,107 @@
 
     <footer>
       <h2>Buon San Valentino, amore mio</h2>
-      <p style="font-size: 1.6rem; margin-bottom: 2rem;">Grazie per ogni momento con te.<br>Ti voglio bene ❤️</p>
+      <p style="font-size: 1.8rem;">Grazie per ogni momento con te. Ti voglio bene ❤️</p>
       <button class="btn-final" id="explode">Fai esplodere cuori per me!</button>
     </footer>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", (event) => {
-      
-      gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger);
 
-      // 1. Orb Expansion
-      gsap.to("#orb", {
-        scale: 10, 
+    // 1. Orb Expansion (Sfondo)
+    gsap.to("#orb", {
+      scale: 10, 
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1
+      }
+    });
+
+    // 2. Sezioni Fade-in (Titoli e blocchi)
+    gsap.utils.toArray('.section').forEach(section => {
+      gsap.to(section, {
+        opacity: 1,
+        y: 0,
+        duration: 1.0,
         scrollTrigger: {
-          trigger: "body",
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1
+          trigger: section,
+          // MODIFICA: "top 85%" fa partire l'animazione appena entra in basso nello schermo
+          start: "top 85%", 
+          // MODIFICA: "once: true" assicura che NON sparisca tornando su
+          once: true 
         }
       });
+    });
 
-      // 2. Animazione Sezioni (Usa .from per sicurezza: parte visibile -> diventa invisibile -> si anima)
-      const sections = gsap.utils.toArray('.section:not(#intro)');
+    // 3. Effetto Macchina da scrivere
+    const typewriterSections = document.querySelectorAll('.typewriter');
+
+    typewriterSections.forEach((el) => {
+      const text = el.textContent.trim();
+      el.innerHTML = ''; 
       
-      sections.forEach(section => {
-        gsap.from(section, {
-          autoAlpha: 0, // Parte da invisibile
-          y: 50,        // Parte dal basso
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%", // Appare quando l'elemento è all'80% dell'altezza schermo
-            once: true 
-          }
-        });
-      });
-
-      // 3. Typewriter Logic (Blindata)
-      const typewriterSections = document.querySelectorAll('.typewriter');
-
-      typewriterSections.forEach((el) => {
-        const text = el.innerText.trim();
-        el.innerHTML = ''; 
+      const chars = text.split('').map(char => {
+        const span = document.createElement('span');
+        span.textContent = char;
         
-        // Creazione spans senza nasconderli manualmente
-        const chars = text.split('').map(char => {
-          const span = document.createElement('span');
-          span.textContent = char;
-          span.style.display = 'inline'; // ESSENZIALE per non spezzare le parole
-          el.appendChild(span);
-          return span;
-        });
-
-        // GSAP gestisce la visibilità. Se GSAP fallisce, il testo rimane visibile.
-        gsap.from(chars, {
-          opacity: 0,
-          duration: 0.1, 
-          stagger: 0.02,
-          ease: "none",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%", 
-            once: true
-          }
-        });
+        if (char === ' ') {
+          span.style.display = 'inline'; 
+        } else {
+          span.style.display = 'inline-block'; 
+        }
+        
+        span.style.opacity = 0;
+        el.appendChild(span);
+        return span;
       });
 
-      // 4. Confetti
-      const btn = document.getElementById('explode');
-      if(btn) {
-        btn.addEventListener('click', () => {
-          const duration = 3 * 1000;
-          const animationEnd = Date.now() + duration;
-          
-          const interval = setInterval(function() {
-            const timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return clearInterval(interval);
-            
-            confetti({
-              particleCount: 5,
-              angle: 60,
-              spread: 55,
-              origin: { x: 0, y: 0.8 },
-              shapes: ['heart'],
-              colors: ['#ff0000', '#800020', '#ff69b4']
-            });
-            confetti({
-              particleCount: 5,
-              angle: 120,
-              spread: 55,
-              origin: { x: 1, y: 0.8 },
-              shapes: ['heart'],
-              colors: ['#ff0000', '#800020', '#ff69b4']
-            });
-          }, 250);
-        });
-      }
+      // Animazione lettere
+      gsap.to(chars, {
+        opacity: 1,
+        duration: 0.1, // Leggermente più veloce per evitare lag
+        stagger: 0.03,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          // MODIFICA: Parte subito appena si vede il paragrafo
+          start: "top 85%", 
+          // MODIFICA: Non si resetta più
+          once: true 
+        }
+      });
+    });
 
+
+    // 4. Confetti Explosion (Bottone finale)
+    document.getElementById('explode').addEventListener('click', () => {
+      const duration = 5 * 1000;
+      const animationEnd = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.8 },
+          shapes: ['heart'],
+          colors: ['#ff0000', '#800020', '#ff69b4']
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.8 },
+          shapes: ['heart'],
+          colors: ['#ff0000', '#800020', '#ff69b4']
+        });
+
+        if (Date.now() < animationEnd) {
+          requestAnimationFrame(frame);
+        }
+      }());
     });
   </script>
 </body>
