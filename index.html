@@ -6,12 +6,10 @@
   <title>Per Noemi ❤️</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -32,8 +30,13 @@
       background: #000;
       color: var(--crema);
       overflow-x: hidden;
-      min-height: 400vh; /* Aumentato per permettere lo scroll */
+      min-height: 400vh;
       line-height: 1.6;
+      /* FIX TIPOGRAFICO: Disabilita la sillabazione automatica su tutto il body */
+      -webkit-hyphens: none;
+      -moz-hyphens: none;
+      -ms-hyphens: none;
+      hyphens: none;
     }
 
     /* Sfondo dinamico */
@@ -66,10 +69,13 @@
       font-weight: normal;
       color: var(--crema);
       margin-bottom: 1rem;
+      /* Sicurezza aggiuntiva per i titoli */
+      -webkit-hyphens: none;
+      hyphens: none;
     }
 
     h1 {
-      font-size: clamp(3rem, 10vw, 6rem); /* Adattivo su mobile */
+      font-size: clamp(3rem, 10vw, 6rem);
       text-shadow: 0 0 20px rgba(178, 235, 242, 0.6);
     }
 
@@ -86,7 +92,7 @@
     .section {
       margin: 45vh 0;
       opacity: 0; /* Gestito da GSAP */
-      transform: translateY(50px);
+      transform: translateY(30px); /* Ridotto leggermente per un feeling più naturale su mobile */
     }
 
     .photo-container {
@@ -109,11 +115,13 @@
       font-size: 1.3rem;
       max-width: 700px;
       margin: 0 auto 2rem;
+      /* FIX TIPOGRAFICO SPECIFICO */
+      -webkit-hyphens: none;
+      hyphens: none;
     }
 
-    /* Modifica cruciale qui per il typewriter */
     .typewriter {
-      opacity: 1 !important; /* Deve essere visibile per permettere ai figli span di animarsi */
+      opacity: 1 !important;
     }
 
     footer {
@@ -132,6 +140,7 @@
       box-shadow: 0 10px 30px rgba(128,0,32,0.5);
       transition: transform 0.3s;
       margin-top: 2rem;
+      -webkit-tap-highlight-color: transparent; /* UX Mobile: rimuove il flash blu al tocco su Android */
     }
 
     .btn-final:hover {
@@ -150,9 +159,6 @@
     </section>
 
     <section class="section">
-<!--      <div class="photo-container">
-        <img src="https://images.unsplash.com/photo-1511285560929-80b456fe4726?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ricordo speciale">
-     </div> --> 
       <h2>Quel messaggio inaspettato...</h2>
       <p class="typewriter">
 Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi hai parlato, perché ero diverso dagli altri. Il tuo interesse mi ha fatto davvero piacere, e non avrei mai immaginato che da una cosa così stupida saremmo arrivati fin qui. Con te è successo qualcosa di inaspettato, c'è stata chimica fin da subito.
@@ -160,16 +166,11 @@ Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi
     </section>
 
     <section class="section">
- <!--      <div class="photo-container">
-        <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Momento romantico">
-    </div>   --> 
       <h2>La prima uscita...</h2>
       <p class="typewriter">
 Alla prima uscita giravamo per la città con il freddo addosso, eppure mi sono divertito un mondo. È stata una cosa meravigliosa, a tal punto che mi sono dimenticato di tutto inconsapevolmente per concentrarmi sul tuo bellissimo sorriso.
       </p>
     </section>
-
-    <!-- NUOVE SEZIONI AGGIUNTE -->
 
     <section class="section">
       <h2>Il primo bacino</h2>
@@ -217,6 +218,7 @@ E non smetterò mai di ripeterlo.
     });
 
     // 2. Sezioni Fade-in (Generale)
+    // UX FIX: Soglia abbassata a 95% e 'once: true' per evitare sparizioni
     gsap.utils.toArray('.section').forEach(section => {
       gsap.to(section, {
         opacity: 1,
@@ -224,46 +226,47 @@ E non smetterò mai di ripeterlo.
         duration: 1.2,
         scrollTrigger: {
           trigger: section,
-          start: "top 85%",
-          toggleActions: "play none none reverse"
+          start: "top 95%", // Parte appena entra nel viewport dal basso
+          once: true // L'animazione avviene una volta sola e il testo rimane visibile
         }
       });
     });
 
-// 3. Typewriter Effect Logic
-const typewriterSections = document.querySelectorAll('.typewriter');
+    // 3. Typewriter Effect Logic
+    const typewriterSections = document.querySelectorAll('.typewriter');
 
-typewriterSections.forEach((el) => {
-  const text = el.textContent.trim();
-  el.innerHTML = ''; // Svuota il testo originale
-  
-  const chars = text.split('').map(char => {
-    const span = document.createElement('span');
-    span.textContent = char;
-    
-    if (char === ' ') {
-      span.style.display = 'inline'; // gli spazi restano normali
-    } else {
-      span.style.display = 'inline-block'; // altri caratteri animati
-    }
-    
-    span.style.opacity = 0;
-    el.appendChild(span);
-    return span;
-  });
+    typewriterSections.forEach((el) => {
+      const text = el.textContent.trim();
+      el.innerHTML = ''; // Svuota il testo originale
+      
+      const chars = text.split('').map(char => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        
+        if (char === ' ') {
+          span.style.display = 'inline'; 
+        } else {
+          span.style.display = 'inline-block'; 
+        }
+        
+        span.style.opacity = 0;
+        el.appendChild(span);
+        return span;
+      });
 
-  gsap.to(chars, {
-    opacity: 1,
-    duration: 0.01,
-    stagger: 0.04,
-    ease: "none",
-    scrollTrigger: {
-      trigger: el,
-      start: "top 75%",
-      once: true
-    }
-  });
-});
+      // UX FIX: Anche qui 'once: true' e soglia 'top 90%' per immediatezza
+      gsap.to(chars, {
+        opacity: 1,
+        duration: 0.01,
+        stagger: 0.04,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 90%", // Appena il testo entra (basso schermo), inizia a scrivere
+          once: true
+        }
+      });
+    });
 
 
     // 4. Confetti Explosion
