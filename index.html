@@ -2,315 +2,487 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Per Noemi ❤️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#1a0005">
+  <title>Per Noemi 💎</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@200;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
+    /* --- RESET & CORE --- */
     :root {
-      --azzurro: #B2EBF2;
-      --bordeaux: #800020;
-      --crema: #fffdf7;
+      --neon-cyan: #00F0FF;
+      --deep-cyan: #008F99;
+      --blood-velvet: #4a0010; /* Bordeaux più profondo */
+      --void-dark: #050001;
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-surface: rgba(10, 0, 5, 0.65); /* Più scuro per leggibilità */
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      font-family: 'Nunito', sans-serif;
-      background: #000;
-      color: var(--crema);
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--void-dark);
+      color: white;
       overflow-x: hidden;
-      min-height: 400vh; /* Aumentato per permettere lo scroll */
-      line-height: 1.6;
+      min-height: 100vh;
     }
 
-    /* Sfondo dinamico */
-    #orb {
+    /* --- DEEP LIQUID NEBULA BACKGROUND --- */
+    .nebula-container {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 300px;
-      height: 300px;
-      border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%;
-      background: radial-gradient(circle at 30% 30%, var(--azzurro), var(--bordeaux) 70%);
-      transform: translate(-50%, -50%) scale(0.1);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2; /* Dietro a tutto */
+      background: var(--void-dark);
+      overflow: hidden;
+    }
+
+    /* Grana cinematografica sopra lo sfondo ma sotto il contenuto */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: -1;
-      filter: blur(40px);
+      opacity: 0.07;
       pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* I "Blob" fluidi */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px); /* Il segreto della liquidità */
+      opacity: 0.8;
       will-change: transform;
     }
 
-    .container {
+    /* Blob 1: Bordeaux Profondo (Base) */
+    .blob-1 {
+      top: -10%;
+      left: -10%;
+      width: 70vw;
+      height: 70vw;
+      background: radial-gradient(circle, var(--blood-velvet), transparent 70%);
+      animation: float-1 20s infinite alternate ease-in-out;
+    }
+
+    /* Blob 2: Ciano Elettrico (Accento) */
+    .blob-2 {
+      bottom: -10%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, var(--deep-cyan), transparent 60%);
+      animation: float-2 15s infinite alternate-reverse ease-in-out;
+    }
+
+    /* Blob 3: Viola di connessione (Per evitare colori sporchi nel mix) */
+    .blob-3 {
+      top: 40%;
+      left: 40%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, #4B0082, transparent 60%);
+      animation: float-3 18s infinite alternate ease-in-out;
+      opacity: 0.6;
+    }
+
+    @keyframes float-1 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(20vw, 10vh) scale(1.1); }
+    }
+
+    @keyframes float-2 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-20vw, -10vh) scale(1.2); }
+    }
+
+    @keyframes float-3 {
+      0% { transform: translate(-10vw, -10vh) scale(1); }
+      50% { transform: translate(10vw, 10vh) scale(0.8); }
+      100% { transform: translate(-5vw, 5vh) scale(1.1); }
+    }
+
+    /* --- LAYOUT & CARDS --- */
+    .viewport-wrapper {
       position: relative;
       z-index: 1;
-      padding: 4vh 5vw;
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    h1, h2 {
-      font-family: 'Great Vibes', cursive;
-      font-weight: normal;
-      color: var(--crema);
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-size: clamp(3rem, 10vw, 6rem); /* Adattivo su mobile */
-      text-shadow: 0 0 20px rgba(178, 235, 242, 0.6);
-    }
-
-    .heart-intro {
-      display: inline-block;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+      padding-bottom: 120px;
     }
 
     .section {
-      margin: 45vh 0;
-      opacity: 0; /* Gestito da GSAP */
-      transform: translateY(50px);
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem 1.5rem;
     }
 
-    .photo-container {
-      width: 90%;
-      max-width: 380px;
-      margin: 0 auto 2rem;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      border: 8px solid rgba(255,255,255,0.1);
+    /* Glass Card Aggiornata per leggibilità su sfondo attivo */
+    .glass-card {
+      background: var(--glass-surface);
+      backdrop-filter: blur(20px); /* Blur aumentato per staccare dal fondo */
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(255,255,255,0.2);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform: translateY(30px);
+      opacity: 0;
     }
 
-    .photo-container img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    p {
-      font-size: 1.3rem;
-      max-width: 700px;
-      margin: 0 auto 2rem;
-    }
-
-    /* Modifica cruciale qui per il typewriter */
-    .typewriter {
-      opacity: 1 !important; /* Deve essere visibile per permettere ai figli span di animarsi */
-    }
-
-    footer {
-      padding: 10vh 5vw;
+    /* --- TYPOGRAPHY --- */
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(4rem, 15vw, 8rem);
+      line-height: 0.9;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+      margin-bottom: 1rem;
       text-align: center;
+      mix-blend-mode: screen; /* Fa brillare il testo sullo sfondo scuro */
     }
 
-    .btn-final {
-      font-size: 1.5rem;
-      padding: 1rem 2.5rem;
-      background: var(--bordeaux);
-      color: var(--crema);
-      border: none;
+    h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      color: var(--neon-cyan);
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--neon-cyan);
+      padding-left: 15px;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    p.typewriter {
+      font-size: 1.3rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    .typewriter span {
+      display: inline-block;
+    }
+
+    .highlight {
+      color: var(--neon-cyan);
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    .heart-pulse {
+      display: inline-block;
+      animation: heartbeat 1.5s infinite;
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.3); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+      60% { transform: scale(1); }
+    }
+
+    /* --- UI ELEMENTS --- */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.8;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--neon-cyan), transparent);
+    }
+
+    .bottom-dock {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      background: rgba(10, 0, 5, 0.8);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 50px;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(128,0,32,0.5);
-      transition: transform 0.3s;
-      margin-top: 2rem;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     }
 
-    .btn-final:hover {
-      transform: scale(1.1);
+    .dock-text {
+      padding-left: 20px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 300;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #800020 0%, #ff0055 100%);
+      color: white;
+      border: none;
+      height: 45px;
+      padding: 0 25px;
+      border-radius: 30px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* --- CANVAS FIX --- */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
     }
   </style>
 </head>
 <body>
 
-  <div id="orb"></div>
-
-  <div class="container">
-    <section class="section" id="intro">
-      <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
-      <p style="font-size: 1.5rem;">Scorri lentamente... queste parole sono tutte per te.</p>
-    </section>
-
-    <section class="section">
-<!--      <div class="photo-container">
-        <img src="https://images.unsplash.com/photo-1511285560929-80b456fe4726?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ricordo speciale">
-     </div> --> 
-      <h2>Quel messaggio inaspettato...</h2>
-      <p class="typewriter">
-Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi hai parlato, perché ero diverso dagli altri. Il tuo interesse mi ha fatto davvero piacere, e non avrei mai immaginato che da una cosa così stupida saremmo arrivati fin qui. Con te è successo qualcosa di inaspettato, c'è stata chimica fin da subito.
-      </p>
-    </section>
-
-    <section class="section">
- <!--      <div class="photo-container">
-        <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Momento romantico">
-    </div>   --> 
-      <h2>La prima uscita...</h2>
-      <p class="typewriter">
-Alla prima uscita giravamo per la città con il freddo addosso, eppure mi sono divertito un mondo. È stata una cosa meravigliosa, a tal punto che mi sono dimenticato di tutto inconsapevolmente per concentrarmi sul tuo bellissimo sorriso.
-      </p>
-    </section>
-
-    <!-- NUOVE SEZIONI AGGIUNTE -->
-
-    <section class="section">
-      <h2>Il primo bacino</h2>
-      <p class="typewriter">
-Il primo bacino che mi hai dato è stato davanti al Ferrari, quando ti ho dato la rosa. Al commerciante avevo detto che era per la mia morosa… era quasi una previsione del tempo.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>L'accoppiata di push e ale</h2>
-      <p class="typewriter">
-Poi abbiamo fatto conoscere Samuele e Alessandra, e mi sento come se fossimo una coppia di cupidi. Con te tutto è inaspettato, e mi piace così.
-      </p>
-    </section>
-
-    <section class="section">
-      <h2>Sentimenti</h2>
-      <p class="typewriter">
-Quello che hai letto è molto simile alla lettera che ti ho scritto.
-Ma se ho fatto questo sito è per lasciare una traccia nel mondo di quello che provo per te.
-Noemi, ti amo.
-E non smetterò mai di ripeterlo.
-      </p>
-    </section>
-
-    <footer>
-      <h2>Buon San Valentino, amore mio</h2>
-      <p style="font-size: 1.8rem;">Grazie per ogni momento con te. Ti voglio bene ❤️</p>
-      <button class="btn-final" id="explode">Fai esplodere cuori per me!</button>
-    </footer>
+  <div class="nebula-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
   </div>
+  
+  <div class="noise-overlay"></div>
+
+  <div class="viewport-wrapper">
+    
+    <section class="section" id="intro">
+      <div style="text-align: center;">
+        <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.8rem; color: var(--neon-cyan); margin-bottom: 10px;">For You</p>
+        <h1>Noemi <span class="heart-pulse">❤️</span></h1>
+        <p style="font-size: 1.2rem; font-weight: 300; max-width: 80%; margin: 0 auto; color: rgba(255,255,255,0.9);">
+          Ogni pixel di questo schermo vibra per te.
+        </p>
+      </div>
+      <div class="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="glass-card">
+        <h2>Quel messaggio...</h2>
+        <p class="typewriter">
+          Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi hai parlato, perché ero diverso dagli altri. Il tuo interesse mi ha fatto davvero piacere, e non avrei mai immaginato che da una cosa così stupida saremmo arrivati fin qui. Con te è successo qualcosa di inaspettato, c'è stata <span class="highlight">chimica</span> fin da subito.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="glass-card">
+        <h2>La prima uscita</h2>
+        <p class="typewriter">
+          Alla prima uscita giravamo per la città con il freddo addosso, eppure mi sono divertito un mondo. È stata una cosa meravigliosa, a tal punto che mi sono dimenticato di tutto inconsapevolmente per concentrarmi sul tuo bellissimo sorriso.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="glass-card">
+        <h2>Il primo bacio</h2>
+        <p class="typewriter">
+          Il primo bacino che mi hai dato è stato davanti al Ferrari, quando ti ho dato la rosa. Al commerciante avevo detto che era per la mia morosa… era quasi una previsione del tempo.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="glass-card">
+        <h2>Cupidi moderni</h2>
+        <p class="typewriter">
+          Poi abbiamo fatto conoscere Samuele e Alessandra, e mi sento come se fossimo una coppia di cupidi. Con te tutto è inaspettato, e mi piace così.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="text-align: center;">
+      <div>
+        <h2 style="font-size: 5rem; border: none; padding: 0; text-shadow: 0 0 40px rgba(0,240,255,0.6);">Ti Amo</h2>
+        <p class="typewriter" style="max-width: 600px; margin: 0 auto;">
+          Quello che hai letto è molto simile alla lettera che ti ho scritto.
+          Ma se ho fatto questo sito è per lasciare una traccia nel mondo digitale di quello che provo per te.
+          Noemi, non smetterò mai di ripeterlo.
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="bottom-dock">
+    <span class="dock-text">Buon San Valentino</span>
+    <button class="btn-action" id="explode">
+      <i class="fa-solid fa-heart"></i> Love
+    </button>
+  </footer>
+
+  <canvas id="confetti-canvas"></canvas>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Orb Expansion
-    gsap.to("#orb", {
-      scale: 10, 
-      scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1
-      }
-    });
-
-    // 2. Sezioni Fade-in (Generale)
-    gsap.utils.toArray('.section').forEach(section => {
-      gsap.to(section, {
+    // 1. ANIMAZIONE CARDS (Fade In Glass)
+    gsap.utils.toArray('.glass-card').forEach(card => {
+      gsap.to(card, {
         opacity: 1,
         y: 0,
-        duration: 1.2,
+        duration: 1,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: section,
-          start: "top 85%",
+          trigger: card,
+          start: "top 85%", 
           toggleActions: "play none none reverse"
         }
       });
     });
 
-// 3. Typewriter Effect Logic
-const typewriterSections = document.querySelectorAll('.typewriter');
+    // 2. TYPEWRITER EFFETTO
+    const typewriterSections = document.querySelectorAll('.typewriter');
 
-typewriterSections.forEach((el) => {
-  const text = el.textContent.trim();
-  el.innerHTML = ''; // Svuota il testo originale
-  
-  const chars = text.split('').map(char => {
-    const span = document.createElement('span');
-    span.textContent = char;
-    
-    if (char === ' ') {
-      span.style.display = 'inline'; // gli spazi restano normali
-    } else {
-      span.style.display = 'inline-block'; // altri caratteri animati
-    }
-    
-    span.style.opacity = 0;
-    el.appendChild(span);
-    return span;
-  });
+    typewriterSections.forEach((el) => {
+      // Clona per sicurezza se contiene HTML (come lo span highlight)
+      // Qui facciamo una gestione semplice per preservare lo span highlight
+      const rawHTML = el.innerHTML.trim();
+      el.innerHTML = ''; 
 
-  gsap.to(chars, {
-    opacity: 1,
-    duration: 0.01,
-    stagger: 0.04,
-    ease: "none",
-    scrollTrigger: {
-      trigger: el,
-      start: "top 75%",
-      once: true
-    }
-  });
-});
+      // Se c'è uno span highlight, dobbiamo gestirlo, ma per semplicità
+      // in questo script trattiamo il testo come sequenza.
+      // Se vuoi mantenere lo stile 'highlight', la logica diventa complessa.
+      // TRUCCO: Usiamo il testo puro per l'animazione, e applichiamo colore dopo.
+      // OPPURE: Suddividiamo preservando i tag. (Metodo Avanzato sotto)
+      
+      // Metodo robusto: Split manuale
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = rawHTML;
+      const nodes = Array.from(wrapper.childNodes);
+      
+      nodes.forEach(node => {
+        if(node.nodeType === 3) { // Text node
+           const chars = node.nodeValue.split('');
+           chars.forEach(char => {
+             const s = document.createElement('span');
+             s.textContent = char;
+             s.style.opacity = 0;
+             if(char === ' ') s.style.marginRight = '0.25em';
+             el.appendChild(s);
+           });
+        } else { // Element node (es. span highlight)
+           const clone = node.cloneNode(true);
+           const innerText = clone.textContent;
+           clone.textContent = ''; // svuota
+           el.appendChild(clone);
+           
+           innerText.split('').forEach(char => {
+             const s = document.createElement('span');
+             s.textContent = char;
+             s.style.opacity = 0;
+             if(char === ' ') s.style.marginRight = '0.25em';
+             clone.appendChild(s);
+           });
+        }
+      });
 
-
-// ... tutto il resto del tuo script rimane uguale fino a qui ...
-
-// 4. Confetti Explosion (VERSIONE MOBILE-FRIENDLY)
-const confettiCanvas = document.getElementById('confetti-canvas');
-const myConfetti = confetti.create(confettiCanvas, {
-  resize: true,
-  useWorker: true   // aiuta tantissimo su mobile
-});
-
-document.getElementById('explode').addEventListener('click', () => {
-  const duration = 5000;
-  const end = Date.now() + duration;
-
-  (function frame() {
-    myConfetti({
-      particleCount: 4,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.8 },
-      shapes: ['heart'],
-      colors: ['#ff0000', '#ff69b4', '#800020']
+      // Anima tutti gli span trovati dentro el
+      gsap.to(el.querySelectorAll('span'), {
+        opacity: 1,
+        duration: 0.03,
+        stagger: 0.02,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 80%",
+        }
+      });
     });
 
-    myConfetti({
-      particleCount: 4,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.8 },
-      shapes: ['heart'],
-      colors: ['#ff0000', '#ff69b4', '#800020']
+    // 3. CONFETTI (CUORI)
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const myConfetti = confetti.create(confettiCanvas, {
+      resize: true,
+      useWorker: true
     });
 
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  }());
-});
-</script>
+    const btn = document.getElementById('explode');
 
-<!-- Aggiungi questo canvas appena prima della chiusura </body> -->
-<canvas id="confetti-canvas" 
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-               pointer-events: none; z-index: 999999; display: block;">
-</canvas>
+    btn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(200);
+      gsap.fromTo(btn, {scale: 0.9}, {scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)"});
 
+      const duration = 3000;
+      const end = Date.now() + duration;
+      const colors = ['#00F0FF', '#800020', '#ffffff'];
 
+      (function frame() {
+        myConfetti({
+          particleCount: 6,
+          angle: 60,
+          spread: 60,
+          origin: { x: 0, y: 0.8 },
+          shapes: ['heart'],
+          colors: colors,
+          scalar: 2 
+        });
+        
+        myConfetti({
+          particleCount: 6,
+          angle: 120,
+          spread: 60,
+          origin: { x: 1, y: 0.8 },
+          shapes: ['heart'],
+          colors: colors,
+          scalar: 2
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    });
+  </script>
 </body>
 </html>
