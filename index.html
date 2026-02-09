@@ -32,10 +32,8 @@
       overflow-x: hidden;
       min-height: 200vh;
       line-height: 1.6;
-      /* FIX TIPOGRAFICO 1: Disabilita sillabazione */
       -webkit-hyphens: none;
       -moz-hyphens: none;
-      -ms-hyphens: none;
       hyphens: none;
     }
 
@@ -91,15 +89,14 @@
       50% { transform: scale(1.15); }
     }
 
-    /* NASCONDE INIZIALMENTE LE SEZIONI */
+    /* SICUREZZA: Text visibile di default. JS lo animerà se funziona. */
     .section {
-      margin: 35vh 0; 
-      opacity: 0; 
-      visibility: hidden; /* Importante per evitare flash */
-      transform: translateY(30px); 
+      margin: 30vh 0; 
+      opacity: 1; 
+      transform: none;
     }
 
-    /* FIX TIPOGRAFICO 2: CSS di sicurezza */
+    /* FIX TIPOGRAFICO: Impedisce parole spezzate */
     p {
       font-size: 1.3rem;
       max-width: 650px;
@@ -109,8 +106,9 @@
       overflow-wrap: normal;
     }
 
+    /* FIX MOBILE TYPEWRITER */
     .typewriter span {
-      will-change: opacity;
+        display: inline; /* Fondamentale per non spezzare le parole */
     }
 
     footer {
@@ -132,10 +130,6 @@
       -webkit-tap-highlight-color: transparent;
       font-weight: 600;
     }
-
-    .btn-final:active {
-      transform: scale(0.95);
-    }
   </style>
 </head>
 <body>
@@ -143,7 +137,7 @@
   <div id="orb"></div>
 
   <div class="container">
-    <section class="section" id="intro" style="opacity: 1; transform: none; visibility: visible; margin-top: 10vh;">
+    <section class="section" id="intro" style="margin-top: 10vh;">
       <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
       <p style="font-size: 1.5rem;">Scorri lentamente...<br>queste parole sono tutte per te.</p>
     </section>
@@ -209,63 +203,54 @@
         }
       });
 
-      // 2. Fade-in Sezioni (Titoli)
+      // 2. Animazione Sezioni (Usa .from per sicurezza: parte visibile -> diventa invisibile -> si anima)
       const sections = gsap.utils.toArray('.section:not(#intro)');
       
       sections.forEach(section => {
-        // Imposta stato iniziale
-        gsap.set(section, { autoAlpha: 0, y: 30 });
-
-        gsap.to(section, {
-          autoAlpha: 1, // Gestisce opacity + visibility
-          y: 0,
+        gsap.from(section, {
+          autoAlpha: 0, // Parte da invisibile
+          y: 50,        // Parte dal basso
           duration: 1,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
-            // FIX SCROLL: start "top 75%" significa che il testo appare 
-            // solo quando è salito bene nello schermo.
-            start: "top 75%", 
+            start: "top 80%", // Appare quando l'elemento è all'80% dell'altezza schermo
             once: true 
           }
         });
       });
 
-      // 3. Typewriter Effect Logic (CORRETTA)
+      // 3. Typewriter Logic (Blindata)
       const typewriterSections = document.querySelectorAll('.typewriter');
 
       typewriterSections.forEach((el) => {
         const text = el.innerText.trim();
         el.innerHTML = ''; 
         
+        // Creazione spans senza nasconderli manualmente
         const chars = text.split('').map(char => {
           const span = document.createElement('span');
           span.textContent = char;
-          
-          // *** FIX CRUCIALE PER MOBILE ***
-          // Usiamo 'inline' invece di 'inline-block'.
-          // Questo impedisce alle parole di spezzarsi a metà.
-          span.style.display = 'inline'; 
-          
-          span.style.opacity = 0;
+          span.style.display = 'inline'; // ESSENZIALE per non spezzare le parole
           el.appendChild(span);
           return span;
         });
 
-        gsap.to(chars, {
-          opacity: 1,
+        // GSAP gestisce la visibilità. Se GSAP fallisce, il testo rimane visibile.
+        gsap.from(chars, {
+          opacity: 0,
           duration: 0.1, 
           stagger: 0.02,
           ease: "none",
           scrollTrigger: {
             trigger: el,
-            start: "top 75%", // Parte dopo aver scrollato un po'
+            start: "top 80%", 
             once: true
           }
         });
       });
 
-      // 4. Confetti Explosion
+      // 4. Confetti
       const btn = document.getElementById('explode');
       if(btn) {
         btn.addEventListener('click', () => {
@@ -274,10 +259,7 @@
           
           const interval = setInterval(function() {
             const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-              return clearInterval(interval);
-            }
+            if (timeLeft <= 0) return clearInterval(interval);
             
             confetti({
               particleCount: 5,
