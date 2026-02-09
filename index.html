@@ -30,9 +30,9 @@
       background: #000;
       color: var(--crema);
       overflow-x: hidden;
-      min-height: 200vh; /* Ottimizzato */
+      min-height: 200vh;
       line-height: 1.6;
-      /* FIX TIPOGRAFICO 1: Impedisce la sillabazione automatica */
+      /* FIX TIPOGRAFICO: Niente sillabazione */
       -webkit-hyphens: none;
       -moz-hyphens: none;
       -ms-hyphens: none;
@@ -58,7 +58,7 @@
       position: relative;
       z-index: 1;
       padding: 4vh 5vw;
-      max-width: 800px; /* Ridotto leggermente per leggibilità su tablet */
+      max-width: 800px;
       margin: 0 auto;
       text-align: center;
     }
@@ -91,26 +91,25 @@
       50% { transform: scale(1.15); }
     }
 
+    /* MODIFICA: Opacità forzata a 0 per garantire che sia nascosto all'inizio */
     .section {
-      margin: 30vh 0; /* Ridotto spazio tra sezioni per meno scroll vuoto su mobile */
+      margin: 35vh 0; /* Aumentato leggermente lo spazio per favorire lo scroll */
       opacity: 0; 
-      transform: translateY(20px); 
+      transform: translateY(30px); 
+      visibility: hidden; /* Sicurezza extra per evitare flash */
     }
 
-    /* FIX TIPOGRAFICO 2: Gestione parole e a capo */
+    /* FIX TIPOGRAFICO: Word-break corretto */
     p {
       font-size: 1.3rem;
       max-width: 650px;
       margin: 0 auto 2rem;
-      
-      /* Le regole d'oro per evitare parole spezzate */
       word-wrap: normal;
-      word-break: keep-all; /* Fondamentale per Italiano: spezza solo agli spazi */
+      word-break: keep-all; 
       overflow-wrap: normal;
     }
 
     .typewriter span {
-      /* PERFORMANCE: Aiuta il browser a gestire l'animazione */
       will-change: opacity;
     }
 
@@ -144,7 +143,7 @@
   <div id="orb"></div>
 
   <div class="container">
-    <section class="section" id="intro" style="opacity: 1; transform: none; margin-top: 10vh;">
+    <section class="section" id="intro" style="opacity: 1; transform: none; visibility: visible; margin-top: 10vh;">
       <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
       <p style="font-size: 1.5rem;">Scorri lentamente...<br>queste parole sono tutte per te.</p>
     </section>
@@ -195,7 +194,6 @@
   </div>
 
   <script>
-    // Attendiamo che il DOM sia pronto dato che usiamo 'defer'
     document.addEventListener("DOMContentLoaded", (event) => {
       
       gsap.registerPlugin(ScrollTrigger);
@@ -211,55 +209,53 @@
         }
       });
 
-      // 2. Fade-in Sezioni (Standard)
-      // Escludiamo l'intro che è già visibile
+      // 2. Fade-in Sezioni (Titoli)
       const sections = gsap.utils.toArray('.section:not(#intro)');
       
       sections.forEach(section => {
+        // Impostiamo lo stato iniziale via JS per sicurezza
+        gsap.set(section, { autoAlpha: 0, y: 30 });
+
         gsap.to(section, {
-          opacity: 1,
+          autoAlpha: 1, // Gestisce sia opacity che visibility
           y: 0,
           duration: 1,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
-            // FIX ANIMAZIONE: start "top 85%" fa apparire il testo appena entra nel quarto basso dello schermo
-            start: "top 85%", 
-            toggleActions: "play none none none",
-            once: true // Importante: l'animazione avviene solo una volta
+            // MODIFICA: "top 70%" significa che l'elemento deve salire fino al 70% dello schermo
+            // prima di apparire. Devi scrollare di più rispetto a prima.
+            start: "top 70%", 
+            once: true 
           }
         });
       });
 
-      // 3. Typewriter Effect Logic (CORRETTO PER TIPOGRAFIA)
+      // 3. Typewriter Effect Logic
       const typewriterSections = document.querySelectorAll('.typewriter');
 
       typewriterSections.forEach((el) => {
-        const text = el.innerText.trim(); // Usa innerText per preservare meglio gli spazi
+        const text = el.innerText.trim();
         el.innerHTML = ''; 
         
-        // Creiamo gli span
         const chars = text.split('').map(char => {
           const span = document.createElement('span');
           span.textContent = char;
-          
-          // FIX CRUCIALE: Usiamo 'inline' invece di 'inline-block'.
-          // 'inline' permette al testo di andare a capo correttamente rispettando le parole.
-          span.style.display = 'inline'; 
-          
-          span.style.opacity = 0;
+          span.style.display = 'inline'; // Mantiene il fix tipografico
+          span.style.opacity = 0;      // Nasconde le lettere inizialmente
           el.appendChild(span);
           return span;
         });
 
         gsap.to(chars, {
           opacity: 1,
-          duration: 0.1, // Leggermente più veloce per fluidità
+          duration: 0.1, 
           stagger: 0.02,
           ease: "none",
           scrollTrigger: {
             trigger: el,
-            start: "top 85%", // Coerente con le sezioni
+            // MODIFICA: Anche qui 70%. Il testo parte solo quando è ben visibile.
+            start: "top 70%", 
             once: true
           }
         });
@@ -271,18 +267,13 @@
         btn.addEventListener('click', () => {
           const duration = 3 * 1000;
           const animationEnd = Date.now() + duration;
-          const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-          const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
+          
           const interval = setInterval(function() {
             const timeLeft = animationEnd - Date.now();
 
             if (timeLeft <= 0) {
               return clearInterval(interval);
             }
-
-            const particleCount = 50 * (timeLeft / duration);
             
             confetti({
               particleCount: 5,
