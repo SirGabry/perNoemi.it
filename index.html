@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <meta name="theme-color" content="#050002"> <title>Per Noemi ❤️</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Per Noemi ❤️</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -14,346 +16,320 @@
 
   <style>
     :root {
-      --azzurro: #00F0FF;
-      --bordeaux: #600018;
+      --azzurro: #B2EBF2;
+      --bordeaux: #800020;
       --crema: #fffdf7;
-      --bg-dark: #050002;
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent; /* Rimuove il flash blu al tocco su Android */
-    }
-
-    html {
-      scroll-behavior: smooth;
+      /* Previene lo zoom automatico su iOS quando si tocca velocemente */
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: var(--bg-dark);
+      background: #000;
       color: var(--crema);
       overflow-x: hidden;
-      /* Altezza sufficiente per lo scroll feeling */
-      min-height: 100dvh; 
-      line-height: 1.5;
+      /* Rendering testo nitido su iPhone */
+      -webkit-font-smoothing: antialiased; 
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      /* Altezza gestita dinamicamente */
+      min-height: 100vh;
     }
 
-    /* --- BACKGROUND ORB (MOBILE OPTIMIZED) --- */
     #orb {
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 80vw; /* Più grande su mobile per coprire bene */
-      height: 80vw;
-      border-radius: 45% 55% 70% 30% / 30% 30% 70% 70%;
-      
-      /* Liquid Gradient */
-      background: linear-gradient(135deg, var(--bordeaux), #3a000e, var(--azzurro));
-      background-size: 300% 300%;
-      
-      transform: translate(-50%, -50%) scale(0.2);
+      width: 60vw; /* Ridotto leggermente per performance */
+      height: 60vw;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--azzurro), var(--bordeaux) 80%);
+      transform: translate(-50%, -50%) scale(0.1);
       z-index: -1;
-      filter: blur(45px); /* Meno blur per performance mobile */
+      /* Blur leggermente ridotto per evitare lag su vecchi iPhone */
+      filter: blur(40px);
       pointer-events: none;
-      will-change: transform, border-radius;
-      
-      animation: morph 8s ease-in-out infinite alternate, gradientFlow 10s ease infinite;
+      will-change: transform;
+      opacity: 0.8;
     }
 
-    @keyframes morph {
-      0% { border-radius: 45% 55% 70% 30% / 30% 30% 70% 70%; }
-      100% { border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%; }
-    }
-
-    @keyframes gradientFlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* --- LAYOUT STORY MODE --- */
     .container {
       position: relative;
       z-index: 1;
-      padding: 0 6vw; /* Padding laterale confortevole */
-      max-width: 100%;
-    }
-
-    /* Ogni sezione è una "schermata" intera */
-    .section {
-      min-height: 85dvh; /* Dynamic Viewport Height: si adatta alla barra indirizzi */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      padding: 0 6vw;
+      /* Gestione aree sicure (Notch) */
+      padding-top: max(4vh, env(safe-area-inset-top));
+      padding-bottom: max(4vh, env(safe-area-inset-bottom));
+      max-width: 800px;
+      margin: 0 auto;
       text-align: center;
-      opacity: 0;
-      /* Piccola traslazione iniziale per effetto entrata */
-      transform: translateY(20px); 
     }
 
-    /* Typography Mobile-First */
-    h1 {
+    h1, h2 {
       font-family: 'Great Vibes', cursive;
-      font-weight: 400;
-      /* Clamp aggressivo per scalare bene su schermi stretti */
-      font-size: clamp(3.5rem, 15vw, 6rem); 
-      line-height: 1.1;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+      font-weight: normal;
+      color: var(--crema);
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(3.2rem, 13vw, 5.5rem);
+      text-shadow: 0 0 20px rgba(178, 235, 242, 0.4);
+      margin-top: 2rem;
     }
 
     h2 {
-      font-family: 'Great Vibes', cursive;
-      font-size: clamp(2.8rem, 10vw, 4rem);
-      margin-bottom: 1.5rem;
-      color: var(--azzurro);
-      text-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+      font-size: clamp(2.2rem, 9vw, 3.5rem);
+      margin-top: 1rem;
     }
 
-    p {
-      font-size: 1.25rem; /* Testo grande e leggibile */
-      font-weight: 300; /* Light font per eleganza */
-      line-height: 1.6;
-      color: rgba(255, 255, 255, 0.95);
-      margin-bottom: 1rem;
-    }
-
-    /* Effetto macchina da scrivere */
-    .typewriter span {
+    .heart-intro {
       display: inline-block;
-      white-space: pre-wrap;
+      animation: pulse 2s infinite ease-in-out;
     }
 
-    /* Footer / Finale */
-    footer {
-      min-height: 60dvh;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .section {
+      /* Spaziatura verticale ottimizzata per mobile */
+      min-height: 60dvh; 
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      text-align: center;
-      padding-bottom: 50px;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
-    /* Bottone "Thumb-Friendly" */
+    /* La prima sezione ha meno margine sopra */
+    #intro {
+      min-height: 80dvh;
+      margin-bottom: 0;
+    }
+
+    p {
+      font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+      max-width: 90%;
+      margin: 0 auto 1.5rem;
+      font-weight: 400;
+      /* Evita vedove e orfani nel testo */
+      text-wrap: pretty; 
+    }
+
+    .typewriter span {
+      display: inline-block;
+      white-space: pre; /* Mantiene gli spazi corretti */
+    }
+
+    footer {
+      padding: 10vh 5vw 15vh 5vw; /* Spazio extra sotto per lo scroll finale */
+      text-align: center;
+    }
+
     .btn-final {
-      width: 100%;
-      max-width: 300px;
-      padding: 1.2rem;
-      font-size: 1.1rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: white;
-      background: linear-gradient(90deg, var(--bordeaux), #900020);
-      border: 1px solid rgba(255,255,255,0.3);
+      font-size: 1.3rem;
+      padding: 1rem 2rem;
+      background: var(--bordeaux);
+      color: var(--crema);
+      border: none;
       border-radius: 50px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
       cursor: pointer;
+      box-shadow: 0 10px 30px rgba(128,0,32,0.4);
+      transition: transform 0.2s, background 0.3s;
       margin-top: 2rem;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-final:active {
-      transform: scale(0.95); /* Feedback al tocco */
+      transform: scale(0.95);
+      background: #a00028;
     }
 
-    /* Icona scroll in basso */
-    .scroll-hint {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0.6;
-      animation: bounce 2s infinite;
-      font-size: 1.5rem;
-      color: var(--azzurro);
+    /* Fix per il canvas dei coriandoli */
+    #confetti-canvas {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      pointer-events: none; 
+      z-index: 9999;
     }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
-      40% {transform: translateX(-50%) translateY(-10px);}
-      60% {transform: translateX(-50%) translateY(-5px);}
-    }
-
-    .heart-beat {
-      display: inline-block;
-      animation: heartbeat 1.5s infinite;
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.3); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.15); }
-      60% { transform: scale(1); }
-    }
-
   </style>
 </head>
 <body>
 
   <div id="orb"></div>
-  <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: block;"></canvas>
+  <canvas id="confetti-canvas"></canvas>
 
   <div class="container">
-    
     <section class="section" id="intro">
-      <h1>Per Noemi <span class="heart-beat">❤️</span></h1>
-      <p style="font-size: 1.1rem; opacity: 0.8; margin-top: -10px;">Scorri verso il basso</p>
-      <div class="scroll-hint">
-        <i class="fa-solid fa-angle-down"></i>
+      <div>
+        <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
+        <p style="opacity: 0.8; font-size: 1.1rem;">Scorri lentamente...<br>queste parole sono tutte per te.</p>
+        <div style="margin-top: 30px; font-size: 1.5rem; opacity: 0.5; animation: bounce 2s infinite;">
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
       </div>
     </section>
 
     <section class="section">
-      <h2>Quel messaggio...</h2>
+      <h2>Quel messaggio inaspettato...</h2>
       <p class="typewriter">
-        Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi hai parlato, perché ero diverso dagli altri. Il tuo interesse mi ha fatto davvero piacere...
-      </p>
-      <p class="typewriter" style="margin-top: 1rem;">
-        Con te è successo qualcosa di inaspettato, c'è stata chimica fin da subito.
+        Ho iniziato scrivendoti “sei gay”, senza pensarci troppo. E invece da lì mi hai parlato, perché ero diverso dagli altri. Il tuo interesse mi ha fatto davvero piacere, e non avrei mai immaginato che da una cosa così stupida saremmo arrivati fin qui. Con te è successo qualcosa di inaspettato, c'è stata chimica fin da subito.
       </p>
     </section>
 
     <section class="section">
-      <h2>La prima uscita</h2>
+      <h2>La prima uscita...</h2>
       <p class="typewriter">
-        Alla prima uscita giravamo per la città con il freddo addosso, eppure mi sono divertito un mondo. È stata una cosa meravigliosa...
-      </p>
-      <p class="typewriter">
-        Mi sono dimenticato di tutto inconsapevolmente per concentrarmi solo sul tuo bellissimo sorriso.
+        Alla prima uscita giravamo per la città con il freddo addosso, eppure mi sono divertito un mondo. È stata una cosa meravigliosa, a tal punto che mi sono dimenticato di tutto inconsapevolmente per concentrarmi sul tuo bellissimo sorriso.
       </p>
     </section>
 
     <section class="section">
-      <h2>Il primo bacio</h2>
+      <h2>Il primo bacino</h2>
       <p class="typewriter">
-        Davanti al Ferrari, quando ti ho dato la rosa. Al commerciante avevo detto che era per la mia morosa… era quasi una previsione del tempo.
+        Il primo bacino che mi hai dato è stato davanti al Ferrari, quando ti ho dato la rosa. Al commerciante avevo detto che era per la mia morosa… era quasi una previsione del tempo.
       </p>
     </section>
 
     <section class="section">
-      <h2>Cupidi moderni</h2>
+      <h2>L'accoppiata di push e ale</h2>
       <p class="typewriter">
-        Poi abbiamo fatto conoscere Samuele e Alessandra. Mi sento come se fossimo una coppia di cupidi. Con te tutto è inaspettato, e mi piace così.
+        Poi abbiamo fatto conoscere Samuele e Alessandra, e mi sento come se fossimo una coppia di cupidi. Con te tutto è inaspettato, e mi piace così.
       </p>
     </section>
 
     <section class="section">
       <h2>Sentimenti</h2>
       <p class="typewriter">
-        Quello che hai letto è molto simile alla lettera che ti ho scritto. Ma volevo lasciare una traccia indelebile di quello che provo.
-      </p>
-      <p class="typewriter" style="font-weight: 700; color: var(--azzurro); font-size: 1.4rem;">
-        Noemi, ti amo.<br>E non smetterò mai di ripeterlo.
+        Quello che hai letto è molto simile alla lettera che ti ho scritto. Ma se ho fatto questo sito è per lasciare una traccia nel mondo di quello che provo per te. Noemi, ti amo. E non smetterò mai di ripeterlo.
       </p>
     </section>
 
     <footer>
-      <h2 style="font-size: 3rem; line-height: 1;">Buon San Valentino</h2>
-      <p style="font-size: 1.2rem; margin-top: 1rem;">Sei la mia persona speciale.</p>
-      <button class="btn-final" id="explode">
-        <i class="fa-solid fa-heart" style="margin-right: 10px;"></i>Ti Amo
-      </button>
+      <h2>Buon San Valentino,<br>amore mio</h2>
+      <p style="font-size: 1.4rem; margin-top: 1rem;">Grazie per ogni momento con te.<br>Ti amo ❤️</p>
+      <button class="btn-final" id="explode">Fai esplodere il mio cuore!</button>
     </footer>
-
   </div>
+
+  <style>
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-10px);}
+      60% {transform: translateY(-5px);}
+    }
+  </style>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Orb che si riempie: Su mobile l'orbita deve crescere molto per coprire lo sfondo
+    // 1. Animazione Orb - Più fluida su mobile
     gsap.to("#orb", {
-      scale: 12, 
+      scale: 12, // Ridotto leggermente per evitare pixelation eccessiva
       scrollTrigger: {
         trigger: "body",
         start: "top top",
         end: "bottom bottom",
-        scrub: 0.5 // Più reattivo su mobile
+        scrub: 1
       }
     });
 
-    // 2. Fade In "Snap" Style: Le sezioni appaiono quando sono al centro schermo
-    gsap.utils.toArray('.section').forEach(section => {
-      gsap.fromTo(section, 
-        { opacity: 0, scale: 0.95 }, 
-        { 
-          opacity: 1, 
-          scale: 1, 
-          duration: 0.8, 
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 65%", // Appare un po' prima del centro
-            end: "top 20%",
-            toggleActions: "play none none reverse"
-          }
+    // 2. Sezioni Fade-in
+    gsap.utils.toArray('.section').forEach((section, i) => {
+      // Salta l'animazione fade-in per la prima sezione (intro) per renderla immediata
+      if(i === 0) {
+        gsap.set(section, {opacity: 1, y: 0});
+        return;
+      }
+
+      gsap.to(section, {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 75%", // Attiva un po' prima su mobile
+          end: "top 30%",
+          toggleActions: "play none none reverse"
         }
-      );
+      });
     });
 
-    // 3. Typewriter Ottimizzato Mobile
+    // 3. Effetto Typewriter Migliorato
     const typewriterSections = document.querySelectorAll('.typewriter');
     typewriterSections.forEach((el) => {
       const text = el.textContent.trim();
-      el.innerHTML = ''; 
+      el.innerHTML = '';
+      el.style.opacity = 1;
       
+      // Creazione span intelligente che rispetta gli spazi
       const chars = text.split('').map(char => {
         const span = document.createElement('span');
         span.textContent = char;
         span.style.opacity = 0;
+        // Importante: white-space: pre assicura che lo spazio occupi larghezza
+        if (char === ' ') span.style.width = '0.3em'; 
         el.appendChild(span);
         return span;
       });
 
       gsap.to(chars, {
         opacity: 1,
-        duration: 0.02, // Velocizzato per l'attenzione mobile
-        stagger: 0.015,
+        duration: 0.1, // Leggermente più veloce per lettura mobile
+        stagger: 0.02,
         ease: "none",
         scrollTrigger: {
           trigger: el,
           start: "top 80%",
-          once: true
+          once: true // Esegue solo una volta per evitare glitch scrollando su e giù
         }
       });
     });
 
-    // 4. Esplosione Finale
-    document.getElementById('explode').addEventListener('click', () => {
-      // Feedback tattile (Vibrazione)
-      if (navigator.vibrate) navigator.vibrate([50, 50, 100]);
+    // 4. Coriandoli a Cuore
+    document.getElementById('explode').addEventListener('click', (e) => {
+      // Feedback tattile (vibrazione) se supportato
+      if (navigator.vibrate) navigator.vibrate(200);
       
-      const btn = document.getElementById('explode');
-      gsap.to(btn, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
-
-      const end = Date.now() + 4000;
-      const colors = ['#00F0FF', '#ff0040', '#ffffff'];
+      const end = Date.now() + 3000;
+      const colors = ['#ff0000', '#ff69b4', '#800020', '#ffffff'];
 
       (function frame() {
         confetti({
-          particleCount: 5,
+          particleCount: 4,
           angle: 60,
-          spread: 70,
-          origin: { x: 0, y: 0.7 }, // Parte dai lati bassi (pollici)
+          spread: 55,
+          origin: { x: 0, y: 0.6 },
           colors: colors,
           shapes: ['heart'],
-          scalar: 1.5 // Cuori più grandi per schermi piccoli
+          disableForReducedMotion: true,
+          scalar: 1.2 // Cuori un po' più grandi
         });
         confetti({
-          particleCount: 5,
+          particleCount: 4,
           angle: 120,
-          spread: 70,
-          origin: { x: 1, y: 0.7 },
+          spread: 55,
+          origin: { x: 1, y: 0.6 },
           colors: colors,
           shapes: ['heart'],
-          scalar: 1.5
+          disableForReducedMotion: true,
+          scalar: 1.2
         });
 
         if (Date.now() < end) {
