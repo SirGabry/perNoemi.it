@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Per Noemi ❤️</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -14,9 +14,10 @@
 
   <style>
     :root {
-      --azzurro: #B2EBF2;
-      --bordeaux: #800020;
+      --azzurro: #00F0FF; /* Reso più elettrico come richiesto */
+      --bordeaux: #600018; /* Più profondo */
       --crema: #fffdf7;
+      --bg-dark: #050002;
     }
 
     * {
@@ -27,33 +28,57 @@
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: #000;
+      background: var(--bg-dark);
       color: var(--crema);
       overflow-x: hidden;
-      min-height: 450vh; 
+      min-height: 400vh; 
       line-height: 1.6;
     }
 
+    /* --- IL CUORE PULSANTE DEL SITO (L'ORB) --- */
+    /* Qui sta la magia: struttura semplice, ma texture complessa */
     #orb {
       position: fixed;
       top: 50%;
       left: 50%;
       width: 300px;
       height: 300px;
-      border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%;
-      background: radial-gradient(circle at 30% 30%, var(--azzurro), var(--bordeaux) 70%);
+      /* Forma organica non perfettamente rotonda */
+      border-radius: 45% 55% 70% 30% / 30% 30% 70% 70%;
+      
+      /* LIQUID NEBULA GRADIENT */
+      background: linear-gradient(120deg, var(--bordeaux), #2a0010, var(--azzurro));
+      background-size: 400% 400%;
+      
       transform: translate(-50%, -50%) scale(0.1);
       z-index: -1;
-      filter: blur(60px);
+      filter: blur(50px); /* Blur per l'atmosfera */
       pointer-events: none;
       will-change: transform;
+      
+      /* Animazione interna dei colori (Lava Lamp effect) */
+      animation: morph 10s ease-in-out infinite alternate, gradientFlow 15s ease infinite;
+    }
+
+    /* L'Orb cambia forma leggermente mentre fluttua */
+    @keyframes morph {
+      0% { border-radius: 45% 55% 70% 30% / 30% 30% 70% 70%; }
+      50% { border-radius: 30% 70% 50% 50% / 30% 30% 70% 70%; }
+      100% { border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%; }
+    }
+
+    /* I colori scorrono dentro l'Orb */
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .container {
       position: relative;
       z-index: 1;
       padding: 4vh 5vw;
-      max-width: 900px;
+      max-width: 800px;
       margin: 0 auto;
       text-align: center;
     }
@@ -63,65 +88,101 @@
       font-weight: normal;
       color: var(--crema);
       margin-bottom: 1.5rem;
+      text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); /* Leggero glow azzurro */
     }
 
     h1 {
       font-size: clamp(3.5rem, 12vw, 6rem);
-      text-shadow: 0 0 20px rgba(178, 235, 242, 0.6);
+      line-height: 1.1;
     }
 
     h2 {
-        font-size: clamp(2.5rem, 8vw, 4rem);
+      font-size: clamp(2.5rem, 8vw, 4rem);
     }
 
     .heart-intro {
       display: inline-block;
-      animation: pulse 2s infinite;
+      animation: pulse 1.5s infinite;
+      color: #ff0040;
+      text-shadow: 0 0 15px #ff0040;
     }
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+      50% { transform: scale(1.2); }
     }
 
     .section {
-      margin: 50vh 0;
+      margin: 40vh 0; /* Spaziatura ottimizzata */
       opacity: 0;
-      transform: translateY(50px);
+      transform: translateY(30px);
     }
 
     p {
-      font-size: 1.4rem;
-      max-width: 700px;
+      font-size: 1.3rem;
+      max-width: 650px;
       margin: 0 auto 2rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.9);
     }
 
+    /* Typewriter container fix */
     .typewriter {
       opacity: 1 !important; 
     }
+    
+    .typewriter span {
+      display: inline-block;
+      white-space: pre-wrap; /* Mantiene gli spazi corretti */
+    }
 
     footer {
-      padding: 20vh 5vw;
+      padding: 15vh 5vw;
       text-align: center;
     }
 
     .btn-final {
-      font-size: 1.5rem;
-      padding: 1.2rem 2.5rem;
-      background: var(--bordeaux);
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(45deg, var(--bordeaux), #a00030);
       color: var(--crema);
-      border: none;
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(128,0,32,0.5);
-      transition: all 0.3s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
       margin-top: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .btn-final:hover {
-      transform: scale(1.1);
-      background: #a00028;
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(160, 0, 48, 0.6);
     }
+    
+    .btn-final:active {
+      transform: scale(0.95);
+    }
+
+    /* Scroll Down Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.7;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+      40% {transform: translateX(-50%) translateY(-10px);}
+      60% {transform: translateX(-50%) translateY(-5px);}
+    }
+
   </style>
 </head>
 <body>
@@ -131,9 +192,13 @@
   <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: block;"></canvas>
 
   <div class="container">
-    <section class="section" id="intro" style="margin-top: 20vh;">
+    <section class="section" id="intro" style="margin-top: 25vh;">
       <h1>Per Noemi <span class="heart-intro">❤️</span></h1>
-      <p style="font-size: 1.5rem;">Scorri lentamente... queste parole sono tutte per te.</p>
+      <p style="font-size: 1.4rem; opacity: 0.8;">Scorri lentamente...<br>queste parole sono tutte per te.</p>
+      
+      <div class="scroll-indicator">
+         <i class="fa-solid fa-chevron-down"></i>
+      </div>
     </section>
 
     <section class="section">
@@ -173,7 +238,7 @@
 
     <footer>
       <h2>Buon San Valentino, amore mio</h2>
-      <p style="font-size: 1.8rem;">Grazie per ogni momento con te. Ti amo ❤️</p>
+      <p style="font-size: 1.6rem; margin-top: 1rem;">Grazie per ogni momento con te. Ti amo ❤️</p>
       <button class="btn-final" id="explode">Fai esplodere il mio cuore!</button>
     </footer>
   </div>
@@ -181,23 +246,25 @@
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Animazione Orb
+    // 1. Animazione Orb: Si espande e ci avvolge
+    // Più "gentile" ma imponente
     gsap.to("#orb", {
-      scale: 15, 
+      scale: 18, 
       scrollTrigger: {
         trigger: "body",
         start: "top top",
         end: "bottom bottom",
-        scrub: 1.5
+        scrub: 1
       }
     });
 
-    // 2. Sezioni Fade-in
+    // 2. Sezioni Fade-in (Elegante risalita)
     gsap.utils.toArray('.section').forEach(section => {
       gsap.to(section, {
         opacity: 1,
         y: 0,
-        duration: 1.5,
+        duration: 1.2,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: section,
           start: "top 80%",
@@ -206,7 +273,7 @@
       });
     });
 
-    // 3. Effetto Typewriter
+    // 3. Effetto Typewriter (Robustezza migliorata per gli spazi)
     const typewriterSections = document.querySelectorAll('.typewriter');
     typewriterSections.forEach((el) => {
       const text = el.textContent.trim();
@@ -215,7 +282,7 @@
       const chars = text.split('').map(char => {
         const span = document.createElement('span');
         span.textContent = char;
-        span.style.display = (char === ' ') ? 'inline' : 'inline-block';
+        // Non nascondiamo gli spazi, ma non li animiamo visibilmente
         span.style.opacity = 0;
         el.appendChild(span);
         return span;
@@ -224,36 +291,42 @@
       gsap.to(chars, {
         opacity: 1,
         duration: 0.01,
-        stagger: 0.03,
+        stagger: 0.02, // Leggermente più veloce per lettura naturale
+        ease: "none",
         scrollTrigger: {
           trigger: el,
-          start: "top 70%",
-          once: true
+          start: "top 75%",
+          once: true // Si anima solo una volta
         }
       });
     });
 
     // 4. Coriandoli a Cuore
     document.getElementById('explode').addEventListener('click', () => {
-      const end = Date.now() + 5000;
-      const colors = ['#ff0000', '#ff69b4', '#800020'];
+      // Vibrazione tattile su mobile
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+      const end = Date.now() + 4000;
+      const colors = ['#00F0FF', '#ff0040', '#800020']; // Aggiunto il Ciano alla palette cuori
 
       (function frame() {
         confetti({
-          particleCount: 3,
+          particleCount: 4,
           angle: 60,
           spread: 55,
-          origin: { x: 0, y: 0.7 },
+          origin: { x: 0, y: 0.8 },
           colors: colors,
-          shapes: ['heart']
+          shapes: ['heart'],
+          scalar: 1.2
         });
         confetti({
-          particleCount: 3,
+          particleCount: 4,
           angle: 120,
           spread: 55,
-          origin: { x: 1, y: 0.7 },
+          origin: { x: 1, y: 0.8 },
           colors: colors,
-          shapes: ['heart']
+          shapes: ['heart'],
+          scalar: 1.2
         });
 
         if (Date.now() < end) {
