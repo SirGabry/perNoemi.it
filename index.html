@@ -32,16 +32,9 @@
       overflow-x: hidden;
       min-height: 400vh;
       line-height: 1.6;
-      
-      /* --- FIX TIPOGRAFICO IMPORTANTE --- */
-      /* Disabilita la sillabazione automatica: le parole non si spezzano più */
+      /* Sicurezza CSS base */
       -webkit-hyphens: none;
-      -moz-hyphens: none;
-      -ms-hyphens: none;
       hyphens: none;
-      /* Gestione a capo standard */
-      word-wrap: break-word;
-      overflow-wrap: break-word;
     }
 
     /* Sfondo dinamico */
@@ -57,7 +50,7 @@
       z-index: -1;
       filter: blur(40px);
       pointer-events: none;
-      will-change: transform; /* Ottimizzazione CPU */
+      will-change: transform;
     }
 
     .container {
@@ -74,9 +67,6 @@
       font-weight: normal;
       color: var(--crema);
       margin-bottom: 1rem;
-      /* Evita spezzettamenti anche nei titoli */
-      -webkit-hyphens: none;
-      hyphens: none;
     }
 
     h1 {
@@ -96,22 +86,26 @@
 
     .section {
       margin: 45vh 0;
-      opacity: 0; /* Gestito da GSAP */
+      opacity: 0; 
       transform: translateY(30px);
-      will-change: opacity, transform; /* Aiuta il browser a non laggare */
+      will-change: opacity, transform;
     }
 
     p {
       font-size: 1.3rem;
       max-width: 700px;
       margin: 0 auto 2rem;
-      /* Sicurezza extra per i paragrafi */
-      -webkit-hyphens: none;
-      hyphens: none;
     }
 
-    /* Classe di utilità per il JS */
-    .typewriter span {
+    /* STILE CRUCIALE PER LE PAROLE */
+    .word-wrapper {
+      display: inline-block; /* Mantiene la parola unita */
+      white-space: nowrap;   /* Impedisce a capo interni alla parola */
+    }
+    
+    .char-span {
+      display: inline-block;
+      opacity: 0;
       will-change: opacity;
     }
 
@@ -197,7 +191,7 @@
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Orb Expansion (Sfondo)
+    // 1. Orb Expansion
     gsap.to("#orb", {
       scale: 10, 
       scrollTrigger: {
@@ -208,7 +202,7 @@
       }
     });
 
-    // 2. Sezioni Fade-in (Titoli e blocchi)
+    // 2. Sezioni Fade-in (Titoli)
     gsap.utils.toArray('.section').forEach(section => {
       gsap.to(section, {
         opacity: 1,
@@ -216,57 +210,68 @@
         duration: 1.0,
         scrollTrigger: {
           trigger: section,
-          // MODIFICA: "top 85%" fa partire l'animazione appena entra in basso nello schermo
           start: "top 85%", 
-          // MODIFICA: "once: true" assicura che NON sparisca tornando su
           once: true 
         }
       });
     });
 
-    // 3. Effetto Macchina da scrivere
+    // 3. Typewriter Effect (FIX PAROLE SPEZZATE)
     const typewriterSections = document.querySelectorAll('.typewriter');
 
     typewriterSections.forEach((el) => {
-      const text = el.textContent.trim();
-      el.innerHTML = ''; 
+      const originalText = el.textContent.trim(); // Prende il testo
+      el.innerHTML = ''; // Pulisce il contenitore
+
+      // Divide il testo in PAROLE (spazi come separatore)
+      const words = originalText.split(' ');
       
-      const chars = text.split('').map(char => {
-        const span = document.createElement('span');
-        span.textContent = char;
-        
-        if (char === ' ') {
-          span.style.display = 'inline'; 
-        } else {
-          span.style.display = 'inline-block'; 
+      const allChars = []; // Array per raccogliere tutte le lettere da animare
+
+      words.forEach((wordText, index) => {
+        // Crea un contenitore per la parola (word-wrapper)
+        // Questo span ha display: inline-block, quindi non si spezza MAI a metà
+        const wordSpan = document.createElement('span');
+        wordSpan.classList.add('word-wrapper');
+
+        // Divide la parola in lettere e le aggiunge al wordSpan
+        wordText.split('').forEach(char => {
+          const charSpan = document.createElement('span');
+          charSpan.textContent = char;
+          charSpan.classList.add('char-span'); // Classe per l'animazione
+          wordSpan.appendChild(charSpan);
+          allChars.push(charSpan); // Aggiunge alla lista per GSAP
+        });
+
+        // Aggiunge la parola al paragrafo principale
+        el.appendChild(wordSpan);
+
+        // Aggiunge lo spazio dopo la parola (tranne per l'ultima)
+        if (index < words.length - 1) {
+          const space = document.createTextNode(' ');
+          el.appendChild(space);
         }
-        
-        span.style.opacity = 0;
-        el.appendChild(span);
-        return span;
       });
 
-      // Animazione lettere
-      gsap.to(chars, {
+      // Animazione GSAP sulle singole lettere
+      gsap.to(allChars, {
         opacity: 1,
-        duration: 0.1, // Leggermente più veloce per evitare lag
-        stagger: 0.03,
+        duration: 0.1, 
+        stagger: 0.03, // Effetto digitazione
         ease: "none",
         scrollTrigger: {
           trigger: el,
-          // MODIFICA: Parte subito appena si vede il paragrafo
-          start: "top 85%", 
-          // MODIFICA: Non si resetta più
-          once: true 
+          start: "top 85%", // Parte quando il testo è visibile in basso
+          once: true // Rimane visibile per sempre
         }
       });
     });
 
-
-    // 4. Confetti Explosion (Bottone finale)
+    // 4. Confetti Explosion
     document.getElementById('explode').addEventListener('click', () => {
       const duration = 5 * 1000;
       const animationEnd = Date.now() + duration;
+      const colors = ['#ff0000', '#800020', '#ff69b4'];
 
       (function frame() {
         confetti({
@@ -275,7 +280,7 @@
           spread: 55,
           origin: { x: 0, y: 0.8 },
           shapes: ['heart'],
-          colors: ['#ff0000', '#800020', '#ff69b4']
+          colors: colors
         });
         confetti({
           particleCount: 3,
@@ -283,7 +288,7 @@
           spread: 55,
           origin: { x: 1, y: 0.8 },
           shapes: ['heart'],
-          colors: ['#ff0000', '#800020', '#ff69b4']
+          colors: colors
         });
 
         if (Date.now() < animationEnd) {
