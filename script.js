@@ -1,6 +1,6 @@
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
-// 1. Orb Expansion (Il tuo sfondo preferito)
+// 1. Orb Expansion 
 gsap.to("#orb", {
   scale: 7, 
   scrollTrigger: {
@@ -20,7 +20,7 @@ gsap.utils.toArray('.timeline-item').forEach((item, i) => {
       duration: 1, 
       scrollTrigger: {
         trigger: item,
-        start: "top 80%"
+        start: "top 80%" // Scatta un po' prima su mobile
       }
     }
   );
@@ -42,11 +42,13 @@ Draggable.create(".polaroid", {
 
 // 4. Typewriter Effect
 document.querySelectorAll('.typewriter').forEach(el => {
-  const text = el.innerText.trim(); // Trim per pulire spazi
+  const text = el.innerText.trim();
   el.innerHTML = '';
   text.split('').forEach(char => {
     const span = document.createElement('span');
     span.innerText = char;
+    // Aggiungi stile inline per sicurezza
+    span.style.opacity = '0';
     el.appendChild(span);
   });
   
@@ -56,7 +58,7 @@ document.querySelectorAll('.typewriter').forEach(el => {
     duration: 0.05,
     scrollTrigger: {
       trigger: el,
-      start: "top 85%"
+      start: "top 90%" // Parte prima che l'utente debba scrollare troppo
     }
   });
 });
@@ -79,27 +81,29 @@ musicBtn.addEventListener('click', () => {
   isPlaying = !isPlaying;
 });
 
-// 6. IL GRAN FINALE: Coriandoli + "Giuggiolina"
+// 6. IL GRAN FINALE
 document.getElementById('surprise-btn').addEventListener('click', () => {
   
-  // A. Coriandoli (Confetti)
+  // A. Coriandoli (Ottimizzati per mobile)
   const duration = 3000;
   const end = Date.now() + duration;
 
   (function frame() {
     confetti({
-      particleCount: 5,
+      particleCount: 4, // Ridotto per performance su iPhone
       angle: 60,
       spread: 55,
       origin: { x: 0 },
-      colors: ['#800020', '#B2EBF2', '#ffffff']
+      colors: ['#800020', '#B2EBF2', '#ffffff'],
+      disableForReducedMotion: true // Accessibilità iOS
     });
     confetti({
-      particleCount: 5,
+      particleCount: 4,
       angle: 120,
       spread: 55,
       origin: { x: 1 },
-      colors: ['#800020', '#B2EBF2', '#ffffff']
+      colors: ['#800020', '#B2EBF2', '#ffffff'],
+      disableForReducedMotion: true
     });
 
     if (Date.now() < end) {
@@ -111,19 +115,17 @@ document.getElementById('surprise-btn').addEventListener('click', () => {
   const msgContainer = document.getElementById('final-message-container');
   const msgText = document.getElementById('giuggiolina-text');
 
-  // Rendiamo visibile il container
   gsap.to(msgContainer, {
     visibility: 'visible',
     opacity: 1,
-    duration: 1,
+    duration: 0.8,
     ease: "power2.out"
   });
 
-  // Animazione del testo (Zoom in)
   gsap.to(msgText, {
-    scale: 1.5,
+    scale: 1, // Torna a grandezza naturale (definito nel CSS responsive)
     duration: 1.5,
-    ease: "elastic.out(1, 0.3)"
+    ease: "elastic.out(1, 0.4)"
   });
 
 });

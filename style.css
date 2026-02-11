@@ -6,17 +6,32 @@
   --oro: #ffd700;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  /* Previene il highlight grigio al tocco su iOS */
+  -webkit-tap-highlight-color: transparent; 
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* Blocca lo scroll orizzontale indesiderato */
+  overscroll-behavior-y: none; /* Evita il rimbalzo elastico della pagina su iOS */
+}
 
 body {
   font-family: 'Nunito', sans-serif;
   background: var(--bg-color);
   color: var(--crema);
-  overflow-x: hidden;
   min-height: 100vh;
+  /* Migliora la nitidezza dei font su iPhone */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: env(safe-area-inset-bottom); /* Spazio per la home bar */
 }
 
-/* SFONDO ORB (Ripristinato) */
+/* SFONDO ORB */
 #orb {
   position: fixed;
   top: 50%;
@@ -37,27 +52,41 @@ body {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
-  pointer-events: none; /* Lascia passare i click finché non appare */
+  pointer-events: none; 
   z-index: 2000;
   opacity: 0;
   visibility: hidden;
-  background: rgba(0,0,0,0.85); /* Scurisce tutto dietro */
+  background: rgba(0,0,0,0.92); /* Ancora più scuro per contrasto */
+  backdrop-filter: blur(10px); /* Effetto vetro iOS */
 }
 
 #giuggiolina-text {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(4rem, 15vw, 8rem);
+  /* Responsive text size per evitare che esca dallo schermo su iPhone piccoli */
+  font-size: clamp(3.5rem, 13vw, 8rem); 
   color: var(--crema);
   text-shadow: 0 0 30px var(--bordeaux), 0 0 60px var(--azzurro);
   transform: scale(0.5);
+  line-height: 1.2;
+  padding: 0 20px;
 }
 
-.container { max-width: 800px; margin: 0 auto; padding: 20px; text-align: center; }
+.container { 
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 20px 20px 100px 20px; /* Padding extra sotto per scrollare bene */
+  text-align: center; 
+  position: relative;
+  z-index: 10;
+}
 
 h1, h2, h3 { font-family: 'Great Vibes', cursive; color: var(--crema); font-weight: normal; }
-h1 { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235, 242, 0.4); }
+h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235, 242, 0.4); line-height: 1.2; }
 
-.subtitle { font-size: 1.2rem; opacity: 0.8; margin-bottom: 3rem; }
+.subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 3rem; }
+.instruction { font-size: 0.9rem; opacity: 0.7; margin-bottom: 1.5rem; font-style: italic; }
+
+.intro-section { margin-top: 15vh; }
 
 /* TIMELINE */
 .timeline { position: relative; max-width: 800px; margin: 5vh auto; }
@@ -67,57 +96,80 @@ h1 { font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235, 
   box-shadow: 0 0 10px var(--bordeaux);
 }
 .timeline-item { padding: 10px 20px; position: relative; width: 50%; opacity: 0; margin-bottom: 30px; }
-.timeline-item.left { left: 0; text-align: right; padding-right: 40px; }
-.timeline-item.right { left: 50%; text-align: left; padding-left: 40px; }
+.timeline-item.left { left: 0; text-align: right; padding-right: 30px; }
+.timeline-item.right { left: 50%; text-align: left; padding-left: 30px; }
 
 .timeline-item::after { 
   content: ''; position: absolute; top: 20px; 
-  width: 15px; height: 15px; background: var(--crema); 
+  width: 12px; height: 12px; background: var(--crema); 
   border-radius: 50%; z-index: 10; box-shadow: 0 0 10px var(--crema);
 }
-.timeline-item.left::after { right: -8px; }
-.timeline-item.right::after { left: -8px; }
+.timeline-item.left::after { right: -6px; }
+.timeline-item.right::after { left: -6px; }
 
 .content {
-  padding: 20px; background: rgba(255,255,255,0.05);
-  border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+  padding: 15px; background: rgba(255,255,255,0.08);
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+  /* Fix per iOS blur sulle box */
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 
-/* GALLERIA DRAGGABLE */
-.gallery-wrapper { margin: 10vh 0; height: 450px; position: relative; }
+.content h3 { font-size: 1.8rem; margin-bottom: 5px; }
+.typewriter { font-size: 1rem; line-height: 1.4; }
+
+/* GALLERIA DRAGGABLE - Adattata per schermi piccoli */
+.gallery-wrapper { margin: 8vh 0; height: 400px; position: relative; touch-action: none; /* Importante per Drag su mobile */ }
 .polaroid-container { position: relative; height: 100%; width: 100%; }
 .polaroid {
-  background: white; padding: 10px 10px 30px 10px;
-  position: absolute; width: 200px;
+  background: white; padding: 8px 8px 25px 8px;
+  position: absolute; width: 160px; /* Un po' più piccole per stare su iPhone */
   box-shadow: 5px 10px 20px rgba(0,0,0,0.5);
   cursor: grab; transition: box-shadow 0.2s;
+  /* Hardware acceleration per iOS */
+  transform: translate3d(0,0,0); 
+  will-change: transform;
 }
 .polaroid:active { cursor: grabbing; z-index: 100!important; }
-.polaroid img { width: 100%; display: block; pointer-events: none; }
+.polaroid img { width: 100%; display: block; pointer-events: none; -webkit-user-select: none; }
 .pin {
   width: 12px; height: 12px; background: var(--bordeaux);
   border-radius: 50%; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
 }
-.p1 { top: 10%; left: 10%; transform: rotate(-8deg); z-index: 1; }
-.p2 { top: 20%; left: 45%; transform: rotate(5deg); z-index: 2; }
-.p3 { top: 50%; left: 25%; transform: rotate(-3deg); z-index: 3; }
+/* Posizioni iniziali centrate meglio per mobile */
+.p1 { top: 5%; left: 5%; transform: rotate(-8deg); z-index: 1; }
+.p2 { top: 25%; left: 40%; transform: rotate(5deg); z-index: 2; }
+.p3 { top: 55%; left: 15%; transform: rotate(-3deg); z-index: 3; }
 
 /* BOTTONE */
 .btn-final {
-  background: var(--bordeaux); color: white; border: none; padding: 15px 50px;
-  font-size: 1.5rem; border-radius: 50px; cursor: pointer;
-  margin-top: 5vh; margin-bottom: 10vh; font-family: 'Great Vibes', cursive;
-  box-shadow: 0 0 20px rgba(128,0,32,0.6); transition: transform 0.3s;
+  background: var(--bordeaux); color: white; border: none; padding: 15px 40px;
+  font-size: 1.4rem; border-radius: 50px; cursor: pointer;
+  margin-top: 2rem; margin-bottom: 5rem; font-family: 'Great Vibes', cursive;
+  box-shadow: 0 0 20px rgba(128,0,32,0.6); transition: transform 0.2s;
+  /* Previene doppio tap zoom */
+  touch-action: manipulation;
 }
-.btn-final:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(128,0,32,0.9); }
+.btn-final:hover { transform: scale(1.05); }
 
-/* TYPEWRITER */
-.typewriter span { opacity: 0; }
-
-/* MUSIC BTN */
+/* MUSIC BTN - Posizionato sopra la Safe Area */
 .music-control {
-  position: fixed; bottom: 20px; right: 20px;
-  width: 50px; height: 50px; background: rgba(128,0,32,0.3);
+  position: fixed; 
+  bottom: calc(20px + env(safe-area-inset-bottom)); 
+  right: 20px;
+  width: 45px; height: 45px; background: rgba(128,0,32,0.4);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 999; border: 1px solid var(--bordeaux); backdrop-filter: blur(5px);
+  cursor: pointer; z-index: 999; border: 1px solid var(--bordeaux); 
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+}
+
+/* MEDIA QUERIES PER SCHERMI PICCOLI (iPhone SE, Mini) */
+@media (max-width: 400px) {
+  h1 { font-size: 3rem; }
+  .polaroid { width: 140px; }
+  .timeline-item { padding-left: 10px; padding-right: 10px; }
+  .timeline-item.left { padding-right: 25px; }
+  .timeline-item.right { padding-left: 25px; }
+  .content { padding: 10px; }
+  .p2 { left: 35%; }
 }
