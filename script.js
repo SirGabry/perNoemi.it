@@ -18,6 +18,29 @@ gsap.to("#orb", {
   }
 });
 
+// --- NUOVA ANIMAZIONE INTRO ---
+// Quando scrolli, la scritta intro si rimpicciolisce e sfuma
+gsap.to(".intro-content", {
+  scale: 0.6,
+  opacity: 0,
+  scrollTrigger: {
+    trigger: ".intro-section",
+    start: "top top", // Inizia quando la sezione è in cima
+    end: "bottom center", // Finisce quando metà sezione è passata
+    scrub: true // Segue il movimento del dito
+  }
+});
+// La freccina sparisce subito
+gsap.to(".scroll-down", {
+    opacity: 0,
+    scrollTrigger: {
+        trigger: ".intro-section",
+        start: "top top",
+        end: "20% top",
+        scrub: true
+    }
+});
+
 // --- TIMELINE ANIMATION ---
 setTimeout(() => {
     gsap.utils.toArray('.timeline-item').forEach((item, i) => {
@@ -26,7 +49,11 @@ setTimeout(() => {
         { opacity: 0, x: isMobile ? 0 : (i % 2 === 0 ? -50 : 50), y: isMobile ? 50 : 0 }, 
         { 
           opacity: 1, x: 0, y: 0, duration: 1, ease: "power2.out",
-          scrollTrigger: { trigger: item, start: "top 85%" }
+          scrollTrigger: { 
+              trigger: item, 
+              // Su mobile appare un po' più tardi
+              start: isMobile ? "top 75%" : "top 85%" 
+          }
         }
       );
     });
@@ -61,7 +88,7 @@ if (document.getElementById('map')) {
     var map = L.map('map').setView([45.3340, 11.5440], 15);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '&copy; OpenStreetMap contributors',
         subdomains: 'abcd', maxZoom: 19
     }).addTo(map);
 
@@ -148,7 +175,7 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- LOGICA GRATTA E VINCI AVANZATA (PERSISTENTE E MOBILE) ---
+// --- LOGICA GRATTA E VINCI (PERSISTENTE E MOBILE) ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
 
@@ -156,108 +183,75 @@ if (canvas && container) {
   const ctx = canvas.getContext('2d');
   let isDrawing = false;
   
-  // Funzione per disegnare la copertura (se non c'è salvataggio)
   const drawCover = () => {
     ctx.fillStyle = "#C0C0C0"; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Testo
     ctx.fillStyle = "#555";
     ctx.font = "bold 20px Nunito";
     ctx.textAlign = "center";
     ctx.fillText("✨ Gratta qui ✨", canvas.width/2, canvas.height/2);
   };
 
-  // Funzione per impostare le dimensioni corrette (High DPI)
   const setSize = () => {
-    // Recupera la grandezza visuale
     const rect = container.getBoundingClientRect();
-    // Recupera il pixel ratio (1 per schermi normali, 2/3 per Retina)
     const dpr = window.devicePixelRatio || 1;
-
-    // Imposta dimensioni fisiche del canvas (moltiplicate per dpr)
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
-
-    // Scala il contesto così usiamo coordinate logiche
     ctx.scale(dpr, dpr);
-    
-    // Importante: lo stile CSS deve rimanere alle dimensioni logiche
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    // CONTROLLO MEMORIA: C'è qualcosa di salvato?
     const savedState = localStorage.getItem('scratchCardState');
     if (savedState) {
-        // Se c'è, carichiamo l'immagine salvata
         const img = new Image();
         img.onload = () => {
-             // Dobbiamo disegnare l'immagine salvata adattandola
-             // Reset della trasformazione per disegnare l'immagine grezza
              ctx.setTransform(1, 0, 0, 1, 0, 0);
              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-             // Ripristina scale per futuri disegni (opzionale se non disegni più)
              ctx.scale(dpr, dpr); 
         };
         img.src = savedState;
     } else {
-        // Altrimenti disegna il grigio
         drawCover();
     }
   };
   
-  // Inizializza
   setSize();
-  // Se si ridimensiona la finestra, ricarichiamo (resetta un po' la vista ma è necessario)
-  // Per semplicità, su mobile l'orientamento cambia raramente mentre gratti.
+  window.addEventListener('resize', setSize);
 
   const getPos = (e) => {
     const rect = canvas.getBoundingClientRect();
-    // Gestione Touch o Mouse
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
-    };
+    return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
   const startDraw = (e) => { isDrawing = true; draw(e); };
   
   const endDraw = () => { 
       isDrawing = false;
-      // SALVATAGGIO STATO: Quando alzi il dito, salviamo il canvas
       saveState(); 
   };
   
   const saveState = () => {
-      // Salva l'intero canvas come stringa Base64
       const dataURL = canvas.toDataURL();
       localStorage.setItem('scratchCardState', dataURL);
   };
 
   const draw = (e) => {
     if (!isDrawing) return;
-    // Previene lo scroll della pagina su mobile mentre si tocca il canvas
     if(e.cancelable) e.preventDefault(); 
     
     const pos = getPos(e);
-    
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    // Dimensione pennello
     ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
     ctx.fill();
   };
 
-  // Event Listeners
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', draw);
   canvas.addEventListener('mouseup', endDraw);
-  canvas.addEventListener('mouseleave', endDraw); // Se esci col mouse, salva
-  
-  // Touch Events (Passive false è importante per preventDefault)
+  canvas.addEventListener('mouseleave', endDraw);
   canvas.addEventListener('touchstart', startDraw, {passive: false});
   canvas.addEventListener('touchmove', draw, {passive: false});
   canvas.addEventListener('touchend', endDraw);
