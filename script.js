@@ -7,8 +7,7 @@ const songs = [
   { title: "Sparks - Coldplay", file: "sparks.mp3" }
 ];
 
-// --- ORB SFONDO (Ottimizzato) ---
-// Riduco leggermente il carico iniziale
+// --- ORB SFONDO ---
 gsap.to("#orb", {
   scale: 7, 
   scrollTrigger: {
@@ -21,7 +20,7 @@ gsap.to("#orb", {
 
 // --- ANIMAZIONE INTRO ---
 gsap.to(".intro-content", {
-  scale: 0.6,
+  scale: 0.8,
   opacity: 0,
   scrollTrigger: {
     trigger: ".intro-section",
@@ -36,28 +35,28 @@ gsap.to(".scroll-down", {
     scrollTrigger: {
         trigger: ".intro-section",
         start: "top top",
-        end: "20% top",
+        end: "10% top",
         scrub: true
     }
 });
 
-// --- TIMELINE ANIMATION ---
-// Aumento leggermente il timeout per dare respiro alla CPU all'avvio
+// --- TIMELINE ANIMATION (Blocchi laterali) ---
 setTimeout(() => {
     gsap.utils.toArray('.timeline-item').forEach((item, i) => {
       const isMobile = window.innerWidth < 768;
+      // Animazione molto semplice e leggera
       gsap.fromTo(item, 
-        { opacity: 0, x: isMobile ? 0 : (i % 2 === 0 ? -50 : 50), y: isMobile ? 50 : 0 }, 
+        { opacity: 0, x: isMobile ? 0 : (i % 2 === 0 ? -30 : 30), y: isMobile ? 30 : 0 }, 
         { 
-          opacity: 1, x: 0, y: 0, duration: 1, ease: "power2.out",
+          opacity: 1, x: 0, y: 0, duration: 0.8, ease: "power1.out",
           scrollTrigger: { 
               trigger: item, 
-              start: isMobile ? "top 75%" : "top 85%" 
+              start: "top 85%" 
           }
         }
       );
     });
-}, 200); // 200ms delay
+}, 100);
 
 // --- DRAGGABLE FOTO ---
 Draggable.create(".polaroid", {
@@ -66,33 +65,23 @@ Draggable.create(".polaroid", {
   onRelease: function() { gsap.to(this.target, { zIndex: 1, scale: 1, duration: 0.2 }); }
 });
 
-// --- TYPEWRITER ---
-// Usiamo ScrollTrigger.batch per ottimizzare le prestazioni se ci sono tanti testi
+// --- NUOVA ANIMAZIONE TESTO (ZERO LAG) ---
+// Invece di spezzare le lettere (che causa lag), animiamo l'intero blocco
 document.querySelectorAll('.typewriter').forEach(el => {
-  const text = el.innerText.trim(); el.innerHTML = '';
-  text.split('').forEach(char => {
-    const span = document.createElement('span');
-    span.innerText = char; span.style.opacity = '0';
-    el.appendChild(span);
-  });
-  
-  ScrollTrigger.create({
-      trigger: el,
-      start: "top 95%",
-      onEnter: () => {
-          gsap.to(el.querySelectorAll('span'), {
-            opacity: 1, stagger: 0.015, duration: 0.05
-          });
-      }
-  });
+  // Rimuoviamo la logica split text pesante
+  gsap.fromTo(el, 
+    { opacity: 0, y: 20 }, 
+    { 
+      opacity: 1, y: 0, duration: 1, ease: "power2.out",
+      scrollTrigger: { trigger: el, start: "top 90%" }
+    }
+  );
 });
 
-// --- MAPPA INTERATTIVA (LAZY LOAD - ZERO LAG) ---
-// La mappa viene creata SOLO quando l'utente arriva alla sezione
+// --- MAPPA INTERATTIVA (Lazy Load) ---
 let mapInitialized = false;
-
 function initMap() {
-    if (mapInitialized) return; // Se esiste già, esci
+    if (mapInitialized) return;
     if (!document.getElementById('map')) return;
 
     const coordFoscolo = [45.3366, 11.5419];
@@ -120,10 +109,9 @@ function initMap() {
     mapInitialized = true;
 }
 
-// Trigger per caricare la mappa
 ScrollTrigger.create({
     trigger: ".map-section",
-    start: "top 120%", // Carica un po' prima che arrivi nello schermo
+    start: "top 120%",
     onEnter: () => initMap()
 });
 
@@ -196,12 +184,12 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- LOGICA GRATTA E VINCI (Ottimizzata) ---
+// --- LOGICA GRATTA E VINCI (RESET AD OGNI RELOAD) ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
 
 if (canvas && container) {
-  const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Ottimizzazione GPU
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   let isDrawing = false;
   
   const drawCover = () => {
@@ -216,31 +204,18 @@ if (canvas && container) {
   const setSize = () => {
     const rect = container.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    // Evita resize inutili se le dimensioni non sono cambiate
-    if (canvas.width === rect.width * dpr && canvas.height === rect.height * dpr) return;
-
+    
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    const savedState = localStorage.getItem('scratchCardState');
-    if (savedState) {
-        const img = new Image();
-        img.onload = () => {
-             ctx.setTransform(1, 0, 0, 1, 0, 0);
-             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-             ctx.scale(dpr, dpr); 
-        };
-        img.src = savedState;
-    } else {
-        drawCover();
-    }
+    // RESET: Disegniamo sempre la copertura, ignorando salvataggi precedenti
+    drawCover();
   };
   
-  // Timeout per evitare calcoli immediati al load
-  setTimeout(setSize, 100);
+  setSize();
   window.addEventListener('resize', () => { setTimeout(setSize, 200) });
 
   const getPos = (e) => {
@@ -251,18 +226,7 @@ if (canvas && container) {
   };
 
   const startDraw = (e) => { isDrawing = true; draw(e); };
-  
-  const endDraw = () => { 
-      if(isDrawing) {
-        isDrawing = false;
-        saveState(); 
-      }
-  };
-  
-  const saveState = () => {
-      const dataURL = canvas.toDataURL();
-      localStorage.setItem('scratchCardState', dataURL);
-  };
+  const endDraw = () => { isDrawing = false; };
 
   const draw = (e) => {
     if (!isDrawing) return;
