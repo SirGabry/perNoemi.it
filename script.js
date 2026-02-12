@@ -7,7 +7,8 @@ const songs = [
   { title: "Sparks - Coldplay", file: "sparks.mp3" }
 ];
 
-// --- ORB SFONDO ---
+// --- ORB SFONDO (Ottimizzato) ---
+// Riduco leggermente il carico iniziale
 gsap.to("#orb", {
   scale: 7, 
   scrollTrigger: {
@@ -18,19 +19,18 @@ gsap.to("#orb", {
   }
 });
 
-// --- NUOVA ANIMAZIONE INTRO ---
-// Quando scrolli, la scritta intro si rimpicciolisce e sfuma
+// --- ANIMAZIONE INTRO ---
 gsap.to(".intro-content", {
   scale: 0.6,
   opacity: 0,
   scrollTrigger: {
     trigger: ".intro-section",
-    start: "top top", // Inizia quando la sezione è in cima
-    end: "bottom center", // Finisce quando metà sezione è passata
-    scrub: true // Segue il movimento del dito
+    start: "top top",
+    end: "bottom center",
+    scrub: true
   }
 });
-// La freccina sparisce subito
+
 gsap.to(".scroll-down", {
     opacity: 0,
     scrollTrigger: {
@@ -42,6 +42,7 @@ gsap.to(".scroll-down", {
 });
 
 // --- TIMELINE ANIMATION ---
+// Aumento leggermente il timeout per dare respiro alla CPU all'avvio
 setTimeout(() => {
     gsap.utils.toArray('.timeline-item').forEach((item, i) => {
       const isMobile = window.innerWidth < 768;
@@ -51,13 +52,12 @@ setTimeout(() => {
           opacity: 1, x: 0, y: 0, duration: 1, ease: "power2.out",
           scrollTrigger: { 
               trigger: item, 
-              // Su mobile appare un po' più tardi
               start: isMobile ? "top 75%" : "top 85%" 
           }
         }
       );
     });
-}, 100);
+}, 200); // 200ms delay
 
 // --- DRAGGABLE FOTO ---
 Draggable.create(".polaroid", {
@@ -67,6 +67,7 @@ Draggable.create(".polaroid", {
 });
 
 // --- TYPEWRITER ---
+// Usiamo ScrollTrigger.batch per ottimizzare le prestazioni se ci sono tanti testi
 document.querySelectorAll('.typewriter').forEach(el => {
   const text = el.innerText.trim(); el.innerHTML = '';
   text.split('').forEach(char => {
@@ -74,21 +75,33 @@ document.querySelectorAll('.typewriter').forEach(el => {
     span.innerText = char; span.style.opacity = '0';
     el.appendChild(span);
   });
-  gsap.to(el.querySelectorAll('span'), {
-    opacity: 1, stagger: 0.015, duration: 0.05,
-    scrollTrigger: { trigger: el, start: "top 95%" }
+  
+  ScrollTrigger.create({
+      trigger: el,
+      start: "top 95%",
+      onEnter: () => {
+          gsap.to(el.querySelectorAll('span'), {
+            opacity: 1, stagger: 0.015, duration: 0.05
+          });
+      }
   });
 });
 
-// --- MAPPA INTERATTIVA CON LEAFLET ---
-if (document.getElementById('map')) {
+// --- MAPPA INTERATTIVA (LAZY LOAD - ZERO LAG) ---
+// La mappa viene creata SOLO quando l'utente arriva alla sezione
+let mapInitialized = false;
+
+function initMap() {
+    if (mapInitialized) return; // Se esiste già, esci
+    if (!document.getElementById('map')) return;
+
     const coordFoscolo = [45.3366, 11.5419];
     const coordVolta = [45.3317, 11.5461];
 
     var map = L.map('map').setView([45.3340, 11.5440], 15);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: '&copy; OpenStreetMap',
         subdomains: 'abcd', maxZoom: 19
     }).addTo(map);
 
@@ -104,7 +117,15 @@ if (document.getElementById('map')) {
         .bindPopup("<b>Il Falò 🔥</b><br>Via A. Volta 22<br>Qui ci siamo conosciuti davvero e abbiamo parlato.");
         
     map.scrollWheelZoom.disable();
+    mapInitialized = true;
 }
+
+// Trigger per caricare la mappa
+ScrollTrigger.create({
+    trigger: ".map-section",
+    start: "top 120%", // Carica un po' prima che arrivi nello schermo
+    onEnter: () => initMap()
+});
 
 
 // --- GESTIONE MUSICA ---
@@ -175,12 +196,12 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- LOGICA GRATTA E VINCI (PERSISTENTE E MOBILE) ---
+// --- LOGICA GRATTA E VINCI (Ottimizzata) ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
 
 if (canvas && container) {
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Ottimizzazione GPU
   let isDrawing = false;
   
   const drawCover = () => {
@@ -195,6 +216,9 @@ if (canvas && container) {
   const setSize = () => {
     const rect = container.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
+    // Evita resize inutili se le dimensioni non sono cambiate
+    if (canvas.width === rect.width * dpr && canvas.height === rect.height * dpr) return;
+
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
@@ -215,8 +239,9 @@ if (canvas && container) {
     }
   };
   
-  setSize();
-  window.addEventListener('resize', setSize);
+  // Timeout per evitare calcoli immediati al load
+  setTimeout(setSize, 100);
+  window.addEventListener('resize', () => { setTimeout(setSize, 200) });
 
   const getPos = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -228,8 +253,10 @@ if (canvas && container) {
   const startDraw = (e) => { isDrawing = true; draw(e); };
   
   const endDraw = () => { 
-      isDrawing = false;
-      saveState(); 
+      if(isDrawing) {
+        isDrawing = false;
+        saveState(); 
+      }
   };
   
   const saveState = () => {
