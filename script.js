@@ -4,21 +4,23 @@ gsap.registerPlugin(ScrollTrigger, Draggable);
 // Questo comando cancella lo stato salvato del gratta e vinci a ogni avvio
 localStorage.removeItem('scratchCardState'); 
 
+// --- CONFIGURAZIONE MUSICA ---
 const songs = [
+  { title: "Angela", file: "Angela.mp3" },           // <--- NUOVA CANZONE (Prima in lista)
   { title: "Golden Hour - JVKE", file: "golden.mp3" },
   { title: "Comunque Bella - Battisti", file: "battisti.mp3" },
   { title: "Sparks - Coldplay", file: "sparks.mp3" }
 ];
 
-// --- SFONDO ANIMATO (Versione Light) ---
+// --- SFONDO ANIMATO ---
 gsap.to("#orb", {
-  scale: 4, // Ridotto da 7 a 4 per meno pixel da renderizzare
+  scale: 4, 
   opacity: 0.8,
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 1 // Scrub più veloce, meno calcoli
+    scrub: 1 
   }
 });
 
@@ -44,8 +46,8 @@ gsap.to(".scroll-down", {
     }
 });
 
-// --- TIMELINE (No Lag) ---
-// Animazione semplice di fade-in
+// --- TIMELINE ---
+// Conta quanti elementi ci sono e li anima tutti
 setTimeout(() => {
     gsap.utils.toArray('.timeline-item').forEach((item, i) => {
       const isMobile = window.innerWidth < 768;
@@ -55,21 +57,21 @@ setTimeout(() => {
           opacity: 1, x: 0, y: 0, duration: 0.6, ease: "power1.out",
           scrollTrigger: { 
               trigger: item, 
-              start: "top 90%" // Attiva prima
+              start: "top 90%" 
           }
         }
       );
     });
 }, 100);
 
-// --- DRAGGABLE ---
+// --- DRAGGABLE POLAROID ---
 Draggable.create(".polaroid", {
   type: "x,y", edgeResistance: 0.65, bounds: ".gallery-wrapper", inertia: true,
   onPress: function() { gsap.to(this.target, { zIndex: 100, scale: 1.1, rotation: 0, duration: 0.2 }); },
   onRelease: function() { gsap.to(this.target, { zIndex: 1, scale: 1, duration: 0.2 }); }
 });
 
-// --- TYPEWRITER (Semplice Fade In) ---
+// --- TYPEWRITER (Effetto Dissolvenza Testo) ---
 document.querySelectorAll('.typewriter').forEach(el => {
   gsap.fromTo(el, 
     { opacity: 0 }, 
@@ -80,12 +82,13 @@ document.querySelectorAll('.typewriter').forEach(el => {
   );
 });
 
-// --- MAPPA INTERATTIVA (Lazy Load Protetto) ---
+// --- MAPPA INTERATTIVA ---
 let mapInitialized = false;
 function initMap() {
     if (mapInitialized) return;
     if (!document.getElementById('map')) return;
 
+    // Coordinate
     const coordFoscolo = [45.3366, 11.5419];
     const coordVolta = [45.3317, 11.5461];
 
@@ -127,6 +130,7 @@ const audio = document.getElementById('bg-music');
 let isPlaying = false;
 let currentSrc = '';
 
+// Genera la lista canzoni
 songs.forEach((song) => {
   const div = document.createElement('div');
   div.classList.add('song-item');
@@ -185,7 +189,7 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- GRATTA E VINCI (Reset al Reload) ---
+// --- GRATTA E VINCI ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
 
@@ -211,7 +215,6 @@ if (canvas && container) {
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    // RESET: Disegna sempre la copertina, ignora salvataggi
     drawCover();
   };
   

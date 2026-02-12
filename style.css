@@ -28,14 +28,14 @@ body {
   z-index: -1; 
   filter: blur(60px); 
   pointer-events: none; 
-  will-change: transform; /* Dice al telefono di usare la scheda video */
+  will-change: transform;
 }
 
 /* --- PLAYLIST MENU --- */
 #playlist-modal {
   position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); right: 20px;
   width: 280px; 
-  background: #1a1a1a; /* Sfondo solido invece di vetro per performance */
+  background: #1a1a1a;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px; padding: 20px; z-index: 1000;
   display: flex; flex-direction: column; gap: 10px;
@@ -105,7 +105,7 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
   60% {transform: translateX(-50%) translateY(-5px);}
 }
 
-/* TIMELINE - RIMOSSO BACKDROP-FILTER */
+/* TIMELINE */
 .timeline { position: relative; max-width: 800px; margin: 5vh auto; }
 .timeline::after {
   content: ''; position: absolute; width: 2px; background: var(--bordeaux);
@@ -113,7 +113,7 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 }
 .timeline-item { 
   padding: 10px 40px; position: relative; width: 50%; opacity: 0; margin-bottom: 30px; 
-  will-change: transform, opacity; /* Ottimizzazione GPU */
+  will-change: transform, opacity;
 }
 .timeline-item.left { left: 0; text-align: right; }
 .timeline-item.right { left: 50%; text-align: left; }
@@ -126,10 +126,9 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 
 .content {
   padding: 20px; 
-  background: rgba(30, 30, 30, 0.9); /* Sfondo più solido, no blur */
+  background: rgba(30, 30, 30, 0.9);
   border-radius: 12px; 
   border: 1px solid rgba(255,255,255,0.1);
-  /* BACKDROP-FILTER RIMOSSO PER PERFORMANCE */
 }
 .typewriter { font-size: 1.1rem; line-height: 1.5; }
 
@@ -212,6 +211,59 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 .music-control:active { transform: scale(0.9); }
 .music-control i { color: white; font-size: 1.2rem; }
 
+/* --- STILE LETTERA (Nuovo) --- */
+.letter-section {
+  max-width: 750px;
+  margin: 5vh auto;
+  padding: 0 25px;
+}
+
+.letter-content {
+  text-align: left;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 30px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.letter-content p {
+  margin-bottom: 20px;
+  text-indent: 20px;
+}
+
+/* Enfatizza il TI AMO */
+.highlight-text {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: var(--bordeaux);
+  margin: 40px 0;
+  text-indent: 0 !important;
+  text-shadow: 0 0 10px rgba(128, 0, 32, 0.5);
+  font-family: 'Great Vibes', cursive;
+}
+
+/* Firma */
+.signature {
+  margin-top: 50px;
+  text-align: right;
+  text-indent: 0 !important;
+}
+
+.signature p {
+  margin-bottom: 5px;
+  text-indent: 0;
+}
+
+.signature .name {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.5rem;
+  color: var(--azzurro);
+}
+
 @media (max-width: 768px) {
   h1 { font-size: 3rem; }
   .subtitle { font-size: 0.9rem; padding: 0 10px; }
@@ -225,4 +277,8 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
   .p2 { left: 45%; top: 20%; }
   .p3 { left: 15%; top: 50%; }
   #playlist-modal { width: 85%; right: 7.5%; bottom: 90px; }
+  
+  /* Media query per la lettera */
+  .letter-content { padding: 20px; font-size: 1rem; }
+  .highlight-text { font-size: 1.5rem; }
 }
