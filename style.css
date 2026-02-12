@@ -7,13 +7,18 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { width: 100%; overflow-x: hidden; overscroll-behavior-y: none; }
+
+/* FIX SCROLL: Rimosso overscroll-behavior-y: none che bloccava il PC */
+html, body { 
+  width: 100%; 
+  min-height: 100vh; /* Importante per lo scroll */
+  overflow-x: hidden; 
+}
 
 body {
   font-family: 'Nunito', sans-serif;
   background: var(--bg-color);
   color: var(--crema);
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -42,7 +47,6 @@ body {
   display: flex; flex-direction: column; gap: 10px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
   
-  /* Animazione entrata */
   opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -62,36 +66,44 @@ body {
   transition: background 0.2s; display: flex; align-items: center; justify-content: space-between;
 }
 
-.song-item:hover, .song-item:active { background: rgba(255,255,255,0.2); }
+.song-item:hover { background: rgba(255,255,255,0.2); }
 .song-item.playing { border: 1px solid var(--bordeaux); background: rgba(128,0,32,0.3); color: var(--azzurro); }
 .song-item i { font-size: 0.8rem; opacity: 0.7; }
 
-#close-playlist {
-  margin-top: 10px; background: transparent; border: none; color: #888; cursor: pointer; font-size: 0.9rem;
+.playlist-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }
+
+#close-playlist, .btn-stop {
+  background: transparent; border: none; color: #888; cursor: pointer; font-size: 0.9rem; padding: 5px;
+}
+.btn-stop { color: #ff6b6b; }
 
 /* --- GIUGGIOLINA SCRITTA --- */
 #final-message-container {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
   z-index: 2000; opacity: 0; visibility: hidden;
-  background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  cursor: pointer; /* Indica che è cliccabile */
+  background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);
+  cursor: pointer;
 }
 
-.message-content { text-align: center; pointer-events: none; /* Il click passa al container */ }
+.message-content { text-align: center; pointer-events: none; width: 100%; }
 
 #giuggiolina-text {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(3.5rem, 13vw, 8rem);
+  /* FIX MOBILE: Font size più gestibile */
+  font-size: clamp(3rem, 10vw, 8rem);
   color: var(--crema);
   text-shadow: 0 0 30px var(--bordeaux), 0 0 60px var(--azzurro);
-  transform: scale(0.5); line-height: 1.2; padding: 0 20px;
+  transform: scale(0.5); line-height: 1.2; padding: 0 10px;
 }
 
 .tap-to-close {
   margin-top: 20px; font-size: 1rem; color: #888; font-family: 'Nunito', sans-serif; opacity: 0;
-  animation: fadeIn 2s forwards 1s; /* Appare dopo 1 secondo */
+  animation: fadeIn 2s forwards 1s;
 }
 @keyframes fadeIn { to { opacity: 1; } }
 
@@ -100,6 +112,7 @@ body {
   max-width: 800px; margin: 0 auto; 
   padding: 20px 20px 100px 20px; text-align: center; 
   position: relative; z-index: 10;
+  overflow: hidden; /* Evita scroll orizzontali accidentali */
 }
 
 h1, h2, h3 { font-family: 'Great Vibes', cursive; color: var(--crema); font-weight: normal; }
@@ -107,39 +120,49 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 .subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 3rem; }
 .intro-section { margin-top: 15vh; }
 
+/* TIMELINE STYLE */
 .timeline { position: relative; max-width: 800px; margin: 5vh auto; }
+
+/* Linea Centrale (Default PC) */
 .timeline::after {
   content: ''; position: absolute; width: 2px; background: var(--bordeaux);
   top: 0; bottom: 0; left: 50%; margin-left: -1px; box-shadow: 0 0 10px var(--bordeaux);
 }
-.timeline-item { padding: 10px 20px; position: relative; width: 50%; opacity: 0; margin-bottom: 30px; }
-.timeline-item.left { left: 0; text-align: right; padding-right: 30px; }
-.timeline-item.right { left: 50%; text-align: left; padding-left: 30px; }
+
+.timeline-item { padding: 10px 40px; position: relative; width: 50%; opacity: 0; margin-bottom: 30px; }
+.timeline-item.left { left: 0; text-align: right; }
+.timeline-item.right { left: 50%; text-align: left; }
+
+/* Pallini timeline */
 .timeline-item::after { 
   content: ''; position: absolute; top: 20px; width: 12px; height: 12px; 
   background: var(--crema); border-radius: 50%; z-index: 10; box-shadow: 0 0 10px var(--crema);
 }
 .timeline-item.left::after { right: -6px; }
 .timeline-item.right::after { left: -6px; }
-.content {
-  padding: 15px; background: rgba(255,255,255,0.08); border-radius: 12px; 
-  border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-}
-.typewriter { font-size: 1rem; line-height: 1.4; }
 
-.gallery-wrapper { margin: 8vh 0; height: 400px; position: relative; touch-action: none; }
+.content {
+  padding: 20px; background: rgba(255,255,255,0.08); border-radius: 12px; 
+  border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+}
+.typewriter { font-size: 1.1rem; line-height: 1.5; }
+
+/* GALLERY */
+.gallery-wrapper { margin: 8vh 0; height: 450px; position: relative; touch-action: none; }
 .polaroid-container { position: relative; height: 100%; width: 100%; }
 .polaroid {
-  background: white; padding: 8px 8px 25px 8px; position: absolute; width: 160px;
+  background: white; padding: 10px 10px 35px 10px; position: absolute; width: 180px;
   box-shadow: 5px 10px 20px rgba(0,0,0,0.5); cursor: grab; transform: translate3d(0,0,0); will-change: transform;
 }
 .polaroid:active { cursor: grabbing; z-index: 100!important; }
 .polaroid img { width: 100%; display: block; pointer-events: none; -webkit-user-select: none; }
 .pin { width: 12px; height: 12px; background: var(--bordeaux); border-radius: 50%; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); }
-.p1 { top: 5%; left: 5%; transform: rotate(-8deg); z-index: 1; }
-.p2 { top: 25%; left: 40%; transform: rotate(5deg); z-index: 2; }
-.p3 { top: 55%; left: 15%; transform: rotate(-3deg); z-index: 3; }
 
+.p1 { top: 5%; left: 10%; transform: rotate(-8deg); z-index: 1; }
+.p2 { top: 25%; left: 45%; transform: rotate(5deg); z-index: 2; }
+.p3 { top: 55%; left: 20%; transform: rotate(-3deg); z-index: 3; }
+
+/* BOTTONE FINALE */
 .btn-final {
   background: var(--bordeaux); color: white; border: none; padding: 15px 40px;
   font-size: 1.4rem; border-radius: 50px; cursor: pointer;
@@ -148,18 +171,56 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 }
 .btn-final:hover { transform: scale(1.05); }
 
+/* CONTROLLO MUSICA */
 .music-control {
   position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); right: 20px;
-  width: 45px; height: 45px; background: rgba(128,0,32,0.6);
+  width: 50px; height: 50px; background: rgba(128,0,32,0.8);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   cursor: pointer; z-index: 999; border: 1px solid var(--bordeaux); 
-  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  transition: transform 0.1s;
 }
+.music-control:active { transform: scale(0.9); }
+.music-control i { color: white; font-size: 1.2rem; }
 
-@media (max-width: 400px) {
+/* =========================================
+   MEDIA QUERIES (FIX MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+  
   h1 { font-size: 3rem; }
-  .polaroid { width: 140px; }
-  .timeline-item.left { padding-right: 25px; }
-  .timeline-item.right { padding-left: 25px; }
-  .p2 { left: 35%; }
+  .subtitle { font-size: 0.9rem; padding: 0 10px; }
+
+  /* FIX TIMELINE: Diventa verticale tutta larghezza */
+  .timeline::after { left: 30px; } /* Linea spostata a sinistra */
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px; /* Spazio per la linea */
+    padding-right: 10px;
+    margin-bottom: 40px;
+  }
+  
+  /* Reset posizioni Left/Right per mobile */
+  .timeline-item.left, .timeline-item.right {
+    left: 0;
+    text-align: left; /* Testo allineato a sinistra sempre */
+  }
+  
+  /* Pallini tutti a sinistra */
+  .timeline-item.left::after, .timeline-item.right::after {
+    left: 24px; 
+    right: auto;
+  }
+
+  .content { padding: 15px; }
+
+  /* FIX POLAROID: Più piccole e centrate meglio */
+  .polaroid { width: 140px; padding-bottom: 25px; }
+  .p1 { left: 5%; top: 0; }
+  .p2 { left: 45%; top: 20%; }
+  .p3 { left: 15%; top: 50%; }
+
+  /* Menu Playlist più largo su mobile */
+  #playlist-modal { width: 85%; right: 7.5%; bottom: 90px; }
 }

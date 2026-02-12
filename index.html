@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Per Noemi ❤️</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
@@ -20,10 +20,16 @@
   </div>
 
   <div id="playlist-modal">
-    <h3>Scegli la nostra colonna sonora 🎵</h3>
+    <h3>La nostra colonna sonora 🎵</h3>
     <div id="song-list">
       </div>
-    <button id="close-playlist">Chiudi</button>
+    
+    <div class="playlist-controls">
+      <button id="stop-music" class="btn-stop" style="display:none;">
+        <i class="fas fa-stop"></i> Stop
+      </button>
+      <button id="close-playlist">Chiudi</button>
+    </div>
   </div>
 
   <div id="final-message-container">
