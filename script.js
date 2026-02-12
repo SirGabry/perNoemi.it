@@ -1,20 +1,24 @@
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
-// --- CONFIGURAZIONE CANZONI ---
+// --- 1. PULIZIA MEMORIA PER IL RESET ---
+// Questo comando cancella lo stato salvato del gratta e vinci a ogni avvio
+localStorage.removeItem('scratchCardState'); 
+
 const songs = [
   { title: "Golden Hour - JVKE", file: "golden.mp3" },
   { title: "Comunque Bella - Battisti", file: "battisti.mp3" },
   { title: "Sparks - Coldplay", file: "sparks.mp3" }
 ];
 
-// --- ORB SFONDO ---
+// --- SFONDO ANIMATO (Versione Light) ---
 gsap.to("#orb", {
-  scale: 7, 
+  scale: 4, // Ridotto da 7 a 4 per meno pixel da renderizzare
+  opacity: 0.8,
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 1.5
+    scrub: 1 // Scrub più veloce, meno calcoli
   }
 });
 
@@ -40,45 +44,43 @@ gsap.to(".scroll-down", {
     }
 });
 
-// --- TIMELINE ANIMATION (Blocchi laterali) ---
+// --- TIMELINE (No Lag) ---
+// Animazione semplice di fade-in
 setTimeout(() => {
     gsap.utils.toArray('.timeline-item').forEach((item, i) => {
       const isMobile = window.innerWidth < 768;
-      // Animazione molto semplice e leggera
       gsap.fromTo(item, 
-        { opacity: 0, x: isMobile ? 0 : (i % 2 === 0 ? -30 : 30), y: isMobile ? 30 : 0 }, 
+        { opacity: 0, x: isMobile ? 0 : (i % 2 === 0 ? -20 : 20), y: 20 }, 
         { 
-          opacity: 1, x: 0, y: 0, duration: 0.8, ease: "power1.out",
+          opacity: 1, x: 0, y: 0, duration: 0.6, ease: "power1.out",
           scrollTrigger: { 
               trigger: item, 
-              start: "top 85%" 
+              start: "top 90%" // Attiva prima
           }
         }
       );
     });
 }, 100);
 
-// --- DRAGGABLE FOTO ---
+// --- DRAGGABLE ---
 Draggable.create(".polaroid", {
   type: "x,y", edgeResistance: 0.65, bounds: ".gallery-wrapper", inertia: true,
   onPress: function() { gsap.to(this.target, { zIndex: 100, scale: 1.1, rotation: 0, duration: 0.2 }); },
   onRelease: function() { gsap.to(this.target, { zIndex: 1, scale: 1, duration: 0.2 }); }
 });
 
-// --- NUOVA ANIMAZIONE TESTO (ZERO LAG) ---
-// Invece di spezzare le lettere (che causa lag), animiamo l'intero blocco
+// --- TYPEWRITER (Semplice Fade In) ---
 document.querySelectorAll('.typewriter').forEach(el => {
-  // Rimuoviamo la logica split text pesante
   gsap.fromTo(el, 
-    { opacity: 0, y: 20 }, 
+    { opacity: 0 }, 
     { 
-      opacity: 1, y: 0, duration: 1, ease: "power2.out",
-      scrollTrigger: { trigger: el, start: "top 90%" }
+      opacity: 1, duration: 0.8, 
+      scrollTrigger: { trigger: el, start: "top 95%" }
     }
   );
 });
 
-// --- MAPPA INTERATTIVA (Lazy Load) ---
+// --- MAPPA INTERATTIVA (Lazy Load Protetto) ---
 let mapInitialized = false;
 function initMap() {
     if (mapInitialized) return;
@@ -115,8 +117,7 @@ ScrollTrigger.create({
     onEnter: () => initMap()
 });
 
-
-// --- GESTIONE MUSICA ---
+// --- MUSICA ---
 const musicBtn = document.getElementById('music-btn');
 const playlistModal = document.getElementById('playlist-modal');
 const closePlaylistBtn = document.getElementById('close-playlist');
@@ -184,7 +185,7 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- LOGICA GRATTA E VINCI (RESET AD OGNI RELOAD) ---
+// --- GRATTA E VINCI (Reset al Reload) ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
 
@@ -204,14 +205,13 @@ if (canvas && container) {
   const setSize = () => {
     const rect = container.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    // RESET: Disegniamo sempre la copertura, ignorando salvataggi precedenti
+    // RESET: Disegna sempre la copertina, ignora salvataggi
     drawCover();
   };
   
@@ -227,11 +227,9 @@ if (canvas && container) {
 
   const startDraw = (e) => { isDrawing = true; draw(e); };
   const endDraw = () => { isDrawing = false; };
-
   const draw = (e) => {
     if (!isDrawing) return;
     if(e.cancelable) e.preventDefault(); 
-    
     const pos = getPos(e);
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
@@ -242,13 +240,12 @@ if (canvas && container) {
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', draw);
   canvas.addEventListener('mouseup', endDraw);
-  canvas.addEventListener('mouseleave', endDraw);
   canvas.addEventListener('touchstart', startDraw, {passive: false});
   canvas.addEventListener('touchmove', draw, {passive: false});
   canvas.addEventListener('touchend', endDraw);
 }
 
-// --- IL GRAN FINALE ---
+// --- CONFETTI ---
 const msgContainer = document.getElementById('final-message-container');
 const msgText = document.getElementById('giuggiolina-text');
 const surpriseBtn = document.getElementById('surprise-btn');
