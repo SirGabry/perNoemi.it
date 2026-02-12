@@ -55,39 +55,27 @@ document.querySelectorAll('.typewriter').forEach(el => {
 
 // --- MAPPA INTERATTIVA CON LEAFLET ---
 if (document.getElementById('map')) {
-    // Coordinate approssimative per le vie di Campiglia dei Berici
-    // Via Ugo Foscolo 18 (Zona Nord)
     const coordFoscolo = [45.3366, 11.5419];
-    // Via Alessandro Volta 22 (Zona Sud/Industriale)
     const coordVolta = [45.3317, 11.5461];
 
-    // Crea la mappa centrata tra i due punti
     var map = L.map('map').setView([45.3340, 11.5440], 15);
 
-    // Aggiungi il layer scuro (Dark Matter) o standard
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abcd', maxZoom: 19
     }).addTo(map);
 
-    // Icona personalizzata (Cuore o Standard colorato)
     var heartIcon = L.icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/210/210545.png', // Un cuore rosso
-        iconSize: [30, 30],
-        iconAnchor: [15, 30],
-        popupAnchor: [0, -30]
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/210/210545.png', 
+        iconSize: [30, 30], iconAnchor: [15, 30], popupAnchor: [0, -30]
     });
 
-    // Marker 1: Capodanno (Foscolo)
     L.marker(coordFoscolo, {icon: heartIcon}).addTo(map)
-        .bindPopup("<b>Capodanno ✨</b><br>Via Ugo Foscolo 18 (casa nonna-Anna)<br>Qui ti ho incontrata di nuovo e ho iniziato a scriverli.");
+        .bindPopup("<b>Capodanno ✨</b><br>Via Ugo Foscolo 18<br>Qui l'ho re-incontrata e ho iniziato a scriverle.");
 
-    // Marker 2: Il Falò (Volta)
     L.marker(coordVolta, {icon: heartIcon}).addTo(map)
-        .bindPopup("<b>Il Falò 🔥</b><br>Via A. Volta 22 (casa Anna)<br>Qui ci siamo visti per la prima volta e abbiamo parlato, ti ho insegnato il piano (con insulti) e abbiamo parlato davanti al falò.");
+        .bindPopup("<b>Il Falò 🔥</b><br>Via A. Volta 22<br>Qui ci siamo conosciuti davvero e abbiamo parlato.");
         
-    // Disabilita lo scroll zoom per non disturbare la pagina
     map.scrollWheelZoom.disable();
 }
 
@@ -160,49 +148,116 @@ document.addEventListener('click', (e) => {
     if (!playlistModal.contains(e.target) && !musicBtn.contains(e.target)) { playlistModal.classList.remove('active'); }
 });
 
-// --- LOGICA GRATTA E VINCI ---
+// --- LOGICA GRATTA E VINCI AVANZATA (PERSISTENTE E MOBILE) ---
 const canvas = document.getElementById('js-scratch-canvas');
 const container = document.getElementById('js-scratch-container');
+
 if (canvas && container) {
   const ctx = canvas.getContext('2d');
   let isDrawing = false;
   
-  const setSize = () => {
-    canvas.width = container.offsetWidth;
-    canvas.height = container.offsetHeight;
+  // Funzione per disegnare la copertura (se non c'è salvataggio)
+  const drawCover = () => {
     ctx.fillStyle = "#C0C0C0"; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    // Testo
     ctx.fillStyle = "#555";
-    ctx.font = "20px Nunito";
+    ctx.font = "bold 20px Nunito";
     ctx.textAlign = "center";
     ctx.fillText("✨ Gratta qui ✨", canvas.width/2, canvas.height/2);
   };
+
+  // Funzione per impostare le dimensioni corrette (High DPI)
+  const setSize = () => {
+    // Recupera la grandezza visuale
+    const rect = container.getBoundingClientRect();
+    // Recupera il pixel ratio (1 per schermi normali, 2/3 per Retina)
+    const dpr = window.devicePixelRatio || 1;
+
+    // Imposta dimensioni fisiche del canvas (moltiplicate per dpr)
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    // Scala il contesto così usiamo coordinate logiche
+    ctx.scale(dpr, dpr);
+    
+    // Importante: lo stile CSS deve rimanere alle dimensioni logiche
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+
+    // CONTROLLO MEMORIA: C'è qualcosa di salvato?
+    const savedState = localStorage.getItem('scratchCardState');
+    if (savedState) {
+        // Se c'è, carichiamo l'immagine salvata
+        const img = new Image();
+        img.onload = () => {
+             // Dobbiamo disegnare l'immagine salvata adattandola
+             // Reset della trasformazione per disegnare l'immagine grezza
+             ctx.setTransform(1, 0, 0, 1, 0, 0);
+             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+             // Ripristina scale per futuri disegni (opzionale se non disegni più)
+             ctx.scale(dpr, dpr); 
+        };
+        img.src = savedState;
+    } else {
+        // Altrimenti disegna il grigio
+        drawCover();
+    }
+  };
   
+  // Inizializza
   setSize();
-  window.addEventListener('resize', setSize);
+  // Se si ridimensiona la finestra, ricarichiamo (resetta un po' la vista ma è necessario)
+  // Per semplicità, su mobile l'orientamento cambia raramente mentre gratti.
 
   const getPos = (e) => {
     const rect = canvas.getBoundingClientRect();
-    const touch = e.touches ? e.touches[0] : e;
-    return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    // Gestione Touch o Mouse
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
   };
 
   const startDraw = (e) => { isDrawing = true; draw(e); };
-  const endDraw = () => { isDrawing = false; };
+  
+  const endDraw = () => { 
+      isDrawing = false;
+      // SALVATAGGIO STATO: Quando alzi il dito, salviamo il canvas
+      saveState(); 
+  };
+  
+  const saveState = () => {
+      // Salva l'intero canvas come stringa Base64
+      const dataURL = canvas.toDataURL();
+      localStorage.setItem('scratchCardState', dataURL);
+  };
+
   const draw = (e) => {
     if (!isDrawing) return;
-    e.preventDefault();
+    // Previene lo scroll della pagina su mobile mentre si tocca il canvas
+    if(e.cancelable) e.preventDefault(); 
+    
     const pos = getPos(e);
+    
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+    // Dimensione pennello
+    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
     ctx.fill();
   };
 
+  // Event Listeners
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', draw);
   canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw); // Se esci col mouse, salva
+  
+  // Touch Events (Passive false è importante per preventDefault)
   canvas.addEventListener('touchstart', startDraw, {passive: false});
   canvas.addEventListener('touchmove', draw, {passive: false});
   canvas.addEventListener('touchend', endDraw);
