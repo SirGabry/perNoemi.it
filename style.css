@@ -8,11 +8,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-/* FIX SCROLL: Rimosso overscroll-behavior-y: none che bloccava il PC */
+/* FIX SCROLL */
 html, body { 
-  width: 100%; 
-  min-height: 100vh; /* Importante per lo scroll */
-  overflow-x: hidden; 
+  width: 100%; min-height: 100vh; overflow-x: hidden; 
 }
 
 body {
@@ -32,53 +30,29 @@ body {
   z-index: -1; filter: blur(60px); pointer-events: none; will-change: transform;
 }
 
-/* --- PLAYLIST MENU STILE IOS --- */
+/* --- PLAYLIST MENU --- */
 #playlist-modal {
-  position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom));
-  right: 20px;
-  width: 280px;
-  background: rgba(20, 20, 20, 0.95);
+  position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); right: 20px;
+  width: 280px; background: rgba(20, 20, 20, 0.95);
   border: 1px solid rgba(255,255,255,0.1);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 20px;
-  z-index: 1000;
+  border-radius: 20px; padding: 20px; z-index: 1000;
   display: flex; flex-direction: column; gap: 10px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-  
   opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-#playlist-modal.active {
-  opacity: 1; visibility: visible; transform: translateY(0) scale(1);
-}
-
-#playlist-modal h3 {
-  font-family: 'Nunito', sans-serif; font-size: 1rem; color: #aaa; margin-bottom: 5px; text-align: center;
-}
-
+#playlist-modal.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+#playlist-modal h3 { font-family: 'Nunito', sans-serif; font-size: 1rem; color: #aaa; margin-bottom: 5px; text-align: center; }
 .song-item {
-  background: rgba(255,255,255,0.1);
-  padding: 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px;
   cursor: pointer; text-align: left; font-size: 1rem;
   transition: background 0.2s; display: flex; align-items: center; justify-content: space-between;
 }
-
 .song-item:hover { background: rgba(255,255,255,0.2); }
 .song-item.playing { border: 1px solid var(--bordeaux); background: rgba(128,0,32,0.3); color: var(--azzurro); }
-.song-item i { font-size: 0.8rem; opacity: 0.7; }
-
-.playlist-controls {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-}
-
-#close-playlist, .btn-stop {
-  background: transparent; border: none; color: #888; cursor: pointer; font-size: 0.9rem; padding: 5px;
-}
+.playlist-controls { display: flex; justify-content: space-between; margin-top: 10px; }
+#close-playlist, .btn-stop { background: transparent; border: none; color: #888; cursor: pointer; font-size: 0.9rem; padding: 5px; }
 .btn-stop { color: #ff6b6b; }
 
 /* --- GIUGGIOLINA SCRITTA --- */
@@ -86,21 +60,14 @@ body {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
   z-index: 2000; opacity: 0; visibility: hidden;
-  background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);
-  cursor: pointer;
+  background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); cursor: pointer;
 }
-
 .message-content { text-align: center; pointer-events: none; width: 100%; }
-
 #giuggiolina-text {
-  font-family: 'Great Vibes', cursive;
-  /* FIX MOBILE: Font size più gestibile */
-  font-size: clamp(3rem, 10vw, 8rem);
-  color: var(--crema);
-  text-shadow: 0 0 30px var(--bordeaux), 0 0 60px var(--azzurro);
+  font-family: 'Great Vibes', cursive; font-size: clamp(3rem, 10vw, 8rem);
+  color: var(--crema); text-shadow: 0 0 30px var(--bordeaux), 0 0 60px var(--azzurro);
   transform: scale(0.5); line-height: 1.2; padding: 0 10px;
 }
-
 .tap-to-close {
   margin-top: 20px; font-size: 1rem; color: #888; font-family: 'Nunito', sans-serif; opacity: 0;
   animation: fadeIn 2s forwards 1s;
@@ -111,36 +78,29 @@ body {
 .container { 
   max-width: 800px; margin: 0 auto; 
   padding: 20px 20px 100px 20px; text-align: center; 
-  position: relative; z-index: 10;
-  overflow: hidden; /* Evita scroll orizzontali accidentali */
+  position: relative; z-index: 10; overflow: hidden; 
 }
-
 h1, h2, h3 { font-family: 'Great Vibes', cursive; color: var(--crema); font-weight: normal; }
 h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235, 242, 0.4); line-height: 1.2; }
 .subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 3rem; }
 .intro-section { margin-top: 15vh; }
+.instruction { font-size: 0.9rem; color: #aaa; margin-bottom: 20px; }
 
-/* TIMELINE STYLE */
+/* TIMELINE */
 .timeline { position: relative; max-width: 800px; margin: 5vh auto; }
-
-/* Linea Centrale (Default PC) */
 .timeline::after {
   content: ''; position: absolute; width: 2px; background: var(--bordeaux);
   top: 0; bottom: 0; left: 50%; margin-left: -1px; box-shadow: 0 0 10px var(--bordeaux);
 }
-
 .timeline-item { padding: 10px 40px; position: relative; width: 50%; opacity: 0; margin-bottom: 30px; }
 .timeline-item.left { left: 0; text-align: right; }
 .timeline-item.right { left: 50%; text-align: left; }
-
-/* Pallini timeline */
 .timeline-item::after { 
   content: ''; position: absolute; top: 20px; width: 12px; height: 12px; 
   background: var(--crema); border-radius: 50%; z-index: 10; box-shadow: 0 0 10px var(--crema);
 }
 .timeline-item.left::after { right: -6px; }
 .timeline-item.right::after { left: -6px; }
-
 .content {
   padding: 20px; background: rgba(255,255,255,0.08); border-radius: 12px; 
   border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px);
@@ -157,17 +117,62 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
 .polaroid:active { cursor: grabbing; z-index: 100!important; }
 .polaroid img { width: 100%; display: block; pointer-events: none; -webkit-user-select: none; }
 .pin { width: 12px; height: 12px; background: var(--bordeaux); border-radius: 50%; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); }
-
 .p1 { top: 5%; left: 10%; transform: rotate(-8deg); z-index: 1; }
 .p2 { top: 25%; left: 45%; transform: rotate(5deg); z-index: 2; }
 .p3 { top: 55%; left: 20%; transform: rotate(-3deg); z-index: 3; }
 
-/* BOTTONE FINALE */
+/* MAPPA */
+.map-section { margin: 5vh 0; }
+.map-frame {
+  width: 100%; height: 350px; border-radius: 15px; overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  background: #222; position: relative;
+}
+#map { width: 100%; height: 100%; z-index: 1; }
+
+/* BUCKET LIST */
+.bucket-section { margin: 5vh 0; }
+.bucket-list { list-style: none; text-align: left; max-width: 400px; margin: 0 auto; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; }
+.bucket-list li { margin: 15px 0; font-size: 1.2rem; display: flex; align-items: center; }
+.bucket-list label { cursor: pointer; display: flex; align-items: center; gap: 15px; width: 100%; }
+.bucket-list input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 24px; height: 24px; border: 2px solid var(--bordeaux); border-radius: 6px;
+  display: grid; place-content: center; margin: 0;
+}
+.bucket-list input[type="checkbox"]::before {
+  content: "❤"; color: white; transform: scale(0); transition: 0.2s; font-size: 16px;
+}
+.bucket-list input[type="checkbox"]:checked { background: var(--bordeaux); }
+.bucket-list input[type="checkbox"]:checked::before { transform: scale(1); }
+.bucket-list input[type="checkbox"]:checked + span { text-decoration: line-through; opacity: 0.6; }
+
+/* GRATTA E VINCI */
+.scratch-section { margin: 8vh 0; }
+.scratch-container {
+  position: relative; width: 300px; height: 150px; margin: 0 auto;
+  border-radius: 15px; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); user-select: none;
+}
+.secret-message {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: white; color: #333;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 1;
+}
+.secret-message h3 { font-family: 'Nunito', sans-serif; font-size: 1rem; color: #888; margin: 0; }
+.big-prize { font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--bordeaux); margin: 5px 0 0 0; line-height: 1.1; }
+#js-scratch-canvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 2; cursor: crosshair; touch-action: none;
+}
+
+/* BUTTON */
 .btn-final {
   background: var(--bordeaux); color: white; border: none; padding: 15px 40px;
   font-size: 1.4rem; border-radius: 50px; cursor: pointer;
   margin-top: 2rem; margin-bottom: 5rem; font-family: 'Great Vibes', cursive;
-  box-shadow: 0 0 20px rgba(128,0,32,0.6); transition: transform 0.2s; touch-action: manipulation;
+  box-shadow: 0 0 20px rgba(128,0,32,0.6); transition: transform 0.2s;
 }
 .btn-final:hover { transform: scale(1.05); }
 
@@ -177,50 +182,23 @@ h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(178, 235
   width: 50px; height: 50px; background: rgba(128,0,32,0.8);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   cursor: pointer; z-index: 999; border: 1px solid var(--bordeaux); 
-  backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-  transition: transform 0.1s;
+  backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: transform 0.1s;
 }
 .music-control:active { transform: scale(0.9); }
 .music-control i { color: white; font-size: 1.2rem; }
 
-/* =========================================
-   MEDIA QUERIES (FIX MOBILE)
-   ========================================= */
+/* MEDIA QUERIES MOBILE */
 @media (max-width: 768px) {
-  
   h1 { font-size: 3rem; }
   .subtitle { font-size: 0.9rem; padding: 0 10px; }
-
-  /* FIX TIMELINE: Diventa verticale tutta larghezza */
-  .timeline::after { left: 30px; } /* Linea spostata a sinistra */
-  
-  .timeline-item {
-    width: 100%;
-    padding-left: 70px; /* Spazio per la linea */
-    padding-right: 10px;
-    margin-bottom: 40px;
-  }
-  
-  /* Reset posizioni Left/Right per mobile */
-  .timeline-item.left, .timeline-item.right {
-    left: 0;
-    text-align: left; /* Testo allineato a sinistra sempre */
-  }
-  
-  /* Pallini tutti a sinistra */
-  .timeline-item.left::after, .timeline-item.right::after {
-    left: 24px; 
-    right: auto;
-  }
-
+  .timeline::after { left: 30px; }
+  .timeline-item { width: 100%; padding-left: 70px; padding-right: 10px; margin-bottom: 40px; }
+  .timeline-item.left, .timeline-item.right { left: 0; text-align: left; }
+  .timeline-item.left::after, .timeline-item.right::after { left: 24px; right: auto; }
   .content { padding: 15px; }
-
-  /* FIX POLAROID: Più piccole e centrate meglio */
   .polaroid { width: 140px; padding-bottom: 25px; }
   .p1 { left: 5%; top: 0; }
   .p2 { left: 45%; top: 20%; }
   .p3 { left: 15%; top: 50%; }
-
-  /* Menu Playlist più largo su mobile */
   #playlist-modal { width: 85%; right: 7.5%; bottom: 90px; }
 }

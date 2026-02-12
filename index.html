@@ -7,6 +7,9 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,9 +24,7 @@
 
   <div id="playlist-modal">
     <h3>La nostra colonna sonora 🎵</h3>
-    <div id="song-list">
-      </div>
-    
+    <div id="song-list"></div>
     <div class="playlist-controls">
       <button id="stop-music" class="btn-stop" style="display:none;">
         <i class="fas fa-stop"></i> Stop
@@ -47,7 +48,6 @@
     </section>
 
     <div class="timeline">
-      
       <div class="timeline-item left">
         <div class="content">
           <h3>Quel messaggio...</h3>
@@ -56,7 +56,6 @@
           </p>
         </div>
       </div>
-
       <div class="timeline-item right">
         <div class="content">
           <h3>La prima uscita</h3>
@@ -65,7 +64,6 @@
           </p>
         </div>
       </div>
-
       <div class="timeline-item left">
         <div class="content">
           <h3>Il primo bacio</h3>
@@ -74,7 +72,6 @@
           </p>
         </div>
       </div>
-
        <div class="timeline-item right">
         <div class="content">
           <h3>Noi due</h3>
@@ -83,13 +80,11 @@
           </p>
         </div>
       </div>
-
     </div>
 
     <section class="section gallery-wrapper">
       <h2>Momenti Nostri</h2>
       <p class="instruction">(Sposta le foto con il dito!)</p>
-      
       <div class="polaroid-container">
         <div class="polaroid p1">
           <div class="pin"></div>
@@ -102,6 +97,38 @@
         <div class="polaroid p3">
           <div class="pin"></div>
           <img src="https://placehold.co/300x400/800020/fff?text=Love" alt="Foto">
+        </div>
+      </div>
+    </section>
+
+    <section class="section map-section">
+      <h2>Dove tutto è iniziato...</h2>
+      <p class="subtitle">Campiglia ❤️</p>
+      <div class="map-frame">
+        <div id="map"></div>
+      </div>
+    </section>
+
+    <section class="section bucket-section">
+      <h2>I Nostri Sogni (Bucket List)</h2>
+      <ul class="bucket-list">
+        <li><label><input type="checkbox" checked disabled> <span>Innamorarci persi</span></label></li>
+        <li><label><input type="checkbox"> <span>Vedere l'Aurora Boreale</span></label></li>
+        <li><label><input type="checkbox"> <span>Un viaggio a Parigi</span></label></li>
+        <li><label><input type="checkbox"> <span>Prendere un gatto insieme</span></label></li>
+        <li><label><input type="checkbox" checked disabled> <span>Essere felici</span></label></li>
+      </ul>
+    </section>
+
+    <section class="section scratch-section">
+      <h2>Ho una sorpresa per te...</h2>
+      <p class="instruction">Gratta qui sotto con il dito! ✨</p>
+      
+      <div class="scratch-container" id="js-scratch-container">
+        <canvas id="js-scratch-canvas"></canvas>
+        <div class="secret-message">
+          <h3>Buono valido per:</h3>
+          <p class="big-prize">Una Cena Offerta<br>Dove Vuoi Tu!!</p>
         </div>
       </div>
     </section>
@@ -124,6 +151,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <script src="script.js"></script>
 </body>
 </html>
