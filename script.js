@@ -105,7 +105,7 @@ function initMap() {
     });
 
     L.marker(coordFoscolo, {icon: heartIcon}).addTo(map)
-        .bindPopup("<b>Capodanno ✨</b><br>Via Ugo Foscolo 18<br>Qui l'ho re-incontrata e ho iniziato a scriverle.");
+        .bindPopup("<b>Capodanno ✨</b><br>Via Ugo Foscolo 18<br>Qui ti ho re-incontrata e ho iniziato a scriverti");
 
     L.marker(coordVolta, {icon: heartIcon}).addTo(map)
         .bindPopup("<b>Il Falò 🔥</b><br>Via A. Volta 22<br>Qui ci siamo conosciuti davvero e abbiamo parlato.");
